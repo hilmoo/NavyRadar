@@ -1,8 +1,13 @@
 # NavyRadar
+
 Desktop application for navy radar
 
-Kelompok Keren
+Kelompok Mesin Rumput S8000
+
 Ketua Kelompok: Hilmi Musyaffa - 23/516589/TK/56795
+
 Anggota 1:
-Anggota 2:
+
+Anggota 2: Harun - 23/514148/TK/56466
+
 Anggota 3: Hilmi Musyaffa - 23/516589/TK/56795
