@@ -1,6 +1,6 @@
 # NavyRadar
 
-Desktop application for navy radar
+Desktop application for navy radar.
 
 Kelompok Mesin Rumput S8000
 
