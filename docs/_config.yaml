@@ -1,6 +1,7 @@
 title: NavyRadar
-description: NavyRadar
 theme: minima
+minima:
+  skin: dark
 baseurl: "/NavyRadar"
 url: "https://hilmoo.github.io"
 author: hilmoo
