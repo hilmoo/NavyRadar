@@ -1,0 +1,84 @@
+<UserControl x:Class="Frontend.Views.TopSidePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="1000" d:DesignWidth="300" d:Background="White">
+    <Border CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" Margin="12">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Name" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <TextBox x:Name="ShipSearchTextBox"/>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Type" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <CheckBox Content="Cargo Vessels"/>
+                    <CheckBox Content="Tankers"/>
+                    <CheckBox Content="Passenger Vessels"/>
+                    <CheckBox Content="High Speed Craft"/>
+                    <CheckBox Content="Tugs &amp; Special Craft"/>
+                    <CheckBox Content="Fishing"/>
+                    <CheckBox Content="Pleasure Craft"/>
+                    <CheckBox Content="Navigation Aids"/>
+                    <CheckBox Content="Unspecified Ships"/>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Origin" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <TextBox/>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Destination" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <TextBox/>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Year of Build" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="-" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0"/>
+                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Length Overall" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="-" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0"/>
+                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Gross Tonnage" Margin="0,0,0,5" HorizontalAlignment="Left"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="-" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0"/>
+                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+                <Separator Margin="0,5"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>
