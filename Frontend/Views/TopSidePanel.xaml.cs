@@ -1,8 +1,6 @@
-﻿using System.Windows.Controls;
-
-namespace Frontend.Views
+﻿namespace Frontend.Views
 {
-	public partial class TopSidePanel : UserControl
+	public partial class TopSidePanel
 	{
 		public TopSidePanel()
 		{
