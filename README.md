@@ -127,3 +127,10 @@ classDiagram
     ShipService ..> ShipStatus : uses
     TrackingDataService ..> TrackingData : uses
 ```
+
+## ER Diagram
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/c8888f44-bf98-47b3-929b-8f4037493481">
+  <img src="https://github.com/user-attachments/assets/c538804d-4ffb-4a6f-86e3-90f8d695c52b">
+</picture>
