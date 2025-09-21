@@ -131,6 +131,6 @@ classDiagram
 ## ER Diagram
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/c8888f44-bf98-47b3-929b-8f4037493481">
-  <img src="https://github.com/user-attachments/assets/c538804d-4ffb-4a6f-86e3-90f8d695c52b">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/fb8f27ad-6548-47fa-a023-471423577649">
+  <img src="https://github.com/user-attachments/assets/d21727d2-ade3-4e25-b939-2eed5ed3ed4a">
 </picture>
