@@ -1,4 +1,4 @@
-﻿namespace Frontend.Views
+﻿namespace Frontend.Views.Home
 {
 	public partial class TopSidePanel
 	{
