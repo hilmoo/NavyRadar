@@ -11,29 +11,27 @@
     DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
     mc:Ignorable="d">
     <Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-            <Button
-                Grid.Column="0"
-                Margin="4,4,4,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
-                Command="{Binding SignInCommand}"
-                Content="Sign In" />
+        <Button
+            Grid.Column="0"
+            Margin="4,4,4,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
+            Command="{Binding SignInCommand}"
+            Content="Sign In" />
 
-            <Button
-                Grid.Column="1"
-                Margin="4,4,4,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
-                Command="{Binding RegisterCommand}"
-                Content="Register" />
-        </Grid>
+        <Button
+            Grid.Column="1"
+            Margin="4,4,4,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
+            Command="{Binding RegisterCommand}"
+            Content="Register" />
     </Grid>
 </UserControl>

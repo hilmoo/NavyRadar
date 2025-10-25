@@ -37,7 +37,7 @@ public class NavigationVm : ViewModelBase
         MainCommand = new RelayCommand(Main);
 
         // Startup Page
-        CurrentView = new HomeVm();
+        CurrentView = new MainVm();
     }
 
     public void NavigateTo(object viewModel)

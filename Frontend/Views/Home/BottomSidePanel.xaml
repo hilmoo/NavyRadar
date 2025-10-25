@@ -8,20 +8,18 @@
     d:DesignHeight="1000"
     d:DesignWidth="300"
     mc:Ignorable="d">
-    <Grid>
-        <Border
-            BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
-            BorderThickness="1"
-            CornerRadius="8">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Margin="12" Orientation="Vertical">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        Text="{Binding Path=Ship.Id, FallbackValue='Not Found'}"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-            </ScrollViewer>
+    <Border
+        BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
+        BorderThickness="1"
+        CornerRadius="8">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="12" Orientation="Vertical">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Text="{Binding Path=Ship.Id, FallbackValue='Not Found'}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </ScrollViewer>
 
-        </Border>
-    </Grid>
+    </Border>
 </UserControl>
