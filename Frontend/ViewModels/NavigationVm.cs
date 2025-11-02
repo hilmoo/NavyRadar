@@ -5,14 +5,12 @@ namespace Frontend.ViewModels;
 
 public class NavigationVm : ViewModelBase
 {
-    private object _currentView = null!;
-
     public object CurrentView
     {
-        get => _currentView;
+        get;
         private set
         {
-            _currentView = value;
+            field = value;
             OnPropertyChanged();
         }
     }

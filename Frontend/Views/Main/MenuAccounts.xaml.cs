@@ -2,9 +2,9 @@
 
 namespace Frontend.Views.Main;
 
-public partial class MenuUsers : UserControl
+public partial class MenuAccounts : UserControl
 {
-    public MenuUsers()
+    public MenuAccounts()
     {
         InitializeComponent();
     }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class Sail
 {
@@ -18,6 +18,4 @@ public class Sail
     public decimal? TotalDistanceNm { get; set; }
     public decimal? AverageSpeedKnots { get; set; }
     public decimal? MaxSpeedKnots { get; set; }
-
-    public virtual ICollection<PositionHistory> PositionHistories { get; set; } = new List<PositionHistory>();
 }

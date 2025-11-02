@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SharedModels.Util;
+using NpgsqlTypes;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class PositionHistory
 {
@@ -9,7 +9,7 @@ public class PositionHistory
 
     public int SailId { get; set; }
 
-    [Required] public required Point Coordinates { get; set; }
+    [Required] public required NpgsqlPoint Coordinates { get; set; }
 
     public decimal? SpeedKnots { get; set; }
     public short? HeadingDegrees { get; set; }

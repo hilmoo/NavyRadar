@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class Account
 {
@@ -13,6 +13,4 @@ public class Account
     [Required] public required string Email { get; set; }
 
     [Required] public required string Role { get; set; }
-
-    public virtual Captain? Captain { get; set; }
 }

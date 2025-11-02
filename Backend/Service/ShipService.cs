@@ -1,49 +1,96 @@
-﻿using SharedModels.Contracts.Dtos;
-using SharedModels.Contracts.Enums;
+﻿using Dapper;
+using Backend.IService;
+using Npgsql;
+using Shared.Models;
+
 
 namespace Backend.Service;
 
-public class ShipService
+public class ShipService(NpgsqlDataSource dataSource) : IShipService
 {
-    public Ship? GetShip(string id)
+    private const string SelectColumns =
+        """
+        id AS Id,
+        imo_number AS ImoNumber,
+        mmsi_number AS MmsiNumber,
+        name AS Name,
+        type AS Type,
+        year_build AS YearBuild,
+        length_overall AS LengthOverall,
+        gross_tonnage AS GrossTonnage
+        """;
+
+    public async Task<IEnumerable<Ship>> GetAllAsync()
     {
-        // TODO:
-        return null;
+        const string sql =
+            $"""
+              SELECT {SelectColumns} FROM "ship"
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QueryAsync<Ship>(sql);
     }
-    
-    public List<Ship>? ListAllShips()
+
+    public async Task<Ship?> GetByIdAsync(int id)
     {
-        // TODO:
-        return null;
+        const string sql =
+            $"""
+             SELECT {SelectColumns} FROM "ship" WHERE id = @Id
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, new { Id = id });
     }
-    
-    public Ship AddShip(Ship ship)
+
+    public async Task<Ship?> CreateAsync(Ship ship)
     {
-        // TODO:
-        return null;
+        const string sql =
+            $"""
+             INSERT INTO "ship" (imo_number, mmsi_number, name, type, year_build, length_overall, gross_tonnage)
+             VALUES (@ImoNumber, @MmsiNumber, @Name, @Type, @YearBuild, @LengthOverall, @GrossTonnage)
+             RETURNING {SelectColumns}
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, ship);
     }
-    
-    public Ship? UpdateShipPosition(string id, Position position)
+
+    public async Task<Ship?> UpdateAsync(int id, Ship ship)
     {
-        // TODO:
-        return null;
+        ship.Id = id;
+
+        const string sql =
+            $"""
+             UPDATE "ship"
+             SET imo_number = @ImoNumber,
+                 mmsi_number = @MmsiNumber,
+                 name = @Name,
+                 type = @Type,
+                 year_build = @YearBuild,
+                 length_overall = @LengthOverall,
+                 gross_tonnage = @GrossTonnage
+             WHERE id = @Id
+             RETURNING {SelectColumns}
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, ship);
     }
-    
-    public Ship? UpdateShipStatus(string id, ShipStatus status)
+
+    public async Task<bool> DeleteAsync(int id)
     {
-        // TODO:
-        return null;
-    }
-    
-    public Ship? UpdateDestination(string id, string destination)
-    {
-        // TODO:
-        return null;
-    }
-    
-    public Ship? RemoveShip(string id)
-    {
-        // TODO:
-        return null;
+        const string sql =
+            """
+            DELETE FROM "ship" WHERE id = @Id
+            """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var rowsAffected = await conn.ExecuteAsync(sql, new { Id = id });
+        return rowsAffected > 0;
     }
 }

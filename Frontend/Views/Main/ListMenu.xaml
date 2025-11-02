@@ -38,18 +38,18 @@
                 IsChecked="{Binding IsShipsViewSelected, Mode=OneWay}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
-                Command="{Binding SailsCommand}"
-                Header="Sails"
-                IsChecked="{Binding IsSailsViewSelected, Mode=OneWay}" />
+                Command="{Binding PortsCommand}"
+                Header="Ports"
+                IsChecked="{Binding IsPortsViewSelected, Mode=OneWay}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
-                Command="{Binding UsersCommand}"
-                Header="Users"
-                IsChecked="{Binding IsUsersViewSelected, Mode=OneWay}" />
+                Command="{Binding AccountsCommand}"
+                Header="Accounts"
+                IsChecked="{Binding IsAccountsViewSelected, Mode=OneWay}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding MyAccountCommand}"
-                Header="Account"
+                Header="My Account"
                 IsChecked="{Binding IsMyAccountViewSelected, Mode=OneWay}" />
         </Menu>
     </Grid>

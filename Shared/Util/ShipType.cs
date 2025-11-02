@@ -1,4 +1,4 @@
-namespace SharedModels.Contracts.Enums;
+namespace Shared.Util;
 
 public enum ShipType
 {

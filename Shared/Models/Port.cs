@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SharedModels.Util;
+using NpgsqlTypes;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class Port
 {
@@ -11,5 +11,5 @@ public class Port
 
     [Required] public required string CountryCode { get; set; }
 
-    [Required] public required Point Location { get; set; }
+    [Required] public required NpgsqlPoint Location { get; set; }
 }

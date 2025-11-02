@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class Captain
 {
@@ -15,8 +15,4 @@ public class Captain
     public required string LastName { get; set; }
 
     public string? LicenseNumber { get; set; }
-
-    // Navigation properties
-    public virtual Account Account { get; set; }
-    public virtual ICollection<Sail> Sails { get; set; } = new List<Sail>();
 }

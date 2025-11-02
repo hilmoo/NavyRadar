@@ -1,42 +1,109 @@
-﻿using SharedModels.Contracts.Dtos;
+﻿using Backend.IService;
+using Npgsql;
+using Dapper;
+using Shared.Models;
 
 namespace Backend.Service;
 
-public class AccountService
+public class AccountService(NpgsqlDataSource dataSource) : IAccountService
 {
-    public Account? Register(string username, string password, string email, bool isAdmin = false)
+    private const string SelectColumns =
+        """
+        id AS Id,
+        username AS Username,
+        password AS Password,
+        email AS Email,
+        role AS Role
+        """;
+
+    public async Task<Account?> CreateAsync(Account account)
     {
-        // TODO: 
-        return null;
+        account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
+
+        const string sql =
+            $"""
+             INSERT INTO "account" (username, password, email, role)
+             VALUES (@Username, @Password, @Email, @Role)
+             RETURNING {SelectColumns}
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Account>(sql, account);
     }
 
-    public Account? Login(string username, string password)
+    public async Task<bool> DeleteAsync(int id)
     {
-        // TODO: 
-        return null;
-    }
-    
-    public Account? GetUser(string id)
-    {
-        // TODO: 
-        return null;
-    }
-    
-    public List<Account>? ListAllUser()
-    {
-        // TODO: 
-        return null;
-    }
-    
-    public Account? UpdateAccount(string id, Account account)
-    {
-        // TODO: 
-        return null;
+        const string sql =
+            """
+            DELETE FROM "account" WHERE id = @Id
+            """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var rowsAffected = await conn.ExecuteAsync(sql, new { Id = id });
+        return rowsAffected > 0;
     }
 
-    public Account? RemoveUser(string id)
+    public async Task<IEnumerable<Account>> GetAllAsync()
     {
-        // TODO: 
-        return null;
+        const string sql =
+            $"""
+             SELECT {SelectColumns} FROM "account"
+             """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QueryAsync<Account>(sql);
+    }
+
+    public async Task<Account?> GetByIdAsync(int id)
+    {
+        const string sql =
+            $"""
+             SELECT {SelectColumns} FROM "account" WHERE id = @Id
+             """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new { Id = id });
+    }
+
+    public async Task<Account?> UpdateAsync(int id, Account account)
+    {
+        account.Id = id;
+
+        string sql;
+
+        if (string.IsNullOrWhiteSpace(account.Password))
+        {
+            sql =
+                $"""
+                 UPDATE "account"
+                 SET
+                     username = @Username,
+                     email = @Email,
+                     role = @Role
+                 WHERE
+                     id = @Id
+                 RETURNING {SelectColumns}
+                 """;
+        }
+        else
+        {
+            account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
+            sql =
+                $"""
+                 UPDATE "account"
+                 SET
+                     username = @Username,
+                     password = @Password,
+                     email = @Email,
+                     role = @Role
+                 WHERE
+                     id = @Id
+                 RETURNING {SelectColumns}
+                 """;
+        }
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+        return await conn.QuerySingleOrDefaultAsync<Account>(sql, account);
     }
 }

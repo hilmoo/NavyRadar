@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SharedModels.Models;
+namespace Shared.Models;
 
 public class Ship
 {
@@ -16,6 +16,4 @@ public class Ship
     public int? YearBuild { get; set; }
     public int? LengthOverall { get; set; }
     public int? GrossTonnage { get; set; }
-
-    public virtual ICollection<Sail> Sails { get; set; } = new List<Sail>();
 }

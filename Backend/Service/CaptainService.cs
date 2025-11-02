@@ -1,36 +1,88 @@
-﻿using SharedModels.Contracts.Dtos;
+﻿using Backend.IService;
+using Npgsql;
+using Dapper;
+using Shared.Models;
 
 namespace Backend.Service;
 
-public class CaptainService
+public class CaptainService(NpgsqlDataSource dataSource) : ICaptainService
 {
-    public Account? AddCaptain(string id)
+    private const string SelectColumns =
+        """
+        id AS Id,
+        account_id AS AccountId,
+        first_name AS FirstName,
+        last_name AS LastName,
+        license_number AS LicenseNumber
+        """;
+
+    public async Task<Captain?> CreateAsync(Captain captain)
     {
-        // TODO: 
-        return null;
-    }
-    
-    public AccountCaptain? GetCaptain(string id)
-    {
-        // TODO: 
-        return null;
+        const string sql =
+            $"""
+             INSERT INTO "captain" (account_id, first_name, last_name, license_number)
+             VALUES (@AccountId, @FirstName, @LastName, @LicenseNumber)
+             RETURNING {SelectColumns}
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Captain>(sql, captain);
     }
 
-    public List<AccountCaptain>? ListAllCaptain()
+    public async Task<bool> DeleteAsync(int id)
     {
-        // TODO: 
-        return null;
+        const string sql =
+            """
+            DELETE FROM "captain" WHERE id = @Id
+            """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var rowsAffected = await conn.ExecuteAsync(sql, new { Id = id });
+        return rowsAffected > 0;
     }
-    
-    public Account? UpdateCaptain(string id, AccountCaptain captain)
+
+    public async Task<IEnumerable<Captain>> GetAllAsync()
     {
-        // TODO: 
-        return null;
+        const string sql =
+            $"""
+             SELECT {SelectColumns} FROM "captain"
+             """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QueryAsync<Captain>(sql);
     }
-    
-    public Account? RemoveCaptain(string id)
+
+    public async Task<Captain?> GetByIdAsync(int id)
     {
-        // TODO: 
-        return null;
+        const string sql =
+            $"""
+             SELECT {SelectColumns} FROM "captain" WHERE id = @Id
+             """;
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Captain>(sql, new { Id = id });
+    }
+
+    public async Task<Captain?> UpdateAsync(int id, Captain captain)
+    {
+        captain.Id = id;
+
+        const string sql =
+            $"""
+             UPDATE "captain"
+             SET
+                 account_id = @AccountId,
+                 first_name = @FirstName,
+                 last_name = @LastName,
+                 license_number = @LicenseNumber
+             WHERE
+                 id = @Id
+             RETURNING {SelectColumns}
+             """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QuerySingleOrDefaultAsync<Captain>(sql, captain);
     }
 }

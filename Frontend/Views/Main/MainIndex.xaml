@@ -14,8 +14,8 @@
         <DataTemplate DataType="{x:Type vm:MainMenuShipsVm}">
             <local:MenuShips />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:MainMenuUsersVm}">
-            <local:MenuUsers />
+        <DataTemplate DataType="{x:Type vm:MainMenuAccountsVm}">
+            <local:MenuAccounts />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:MainMenuPortsVm}">
             <local:MenuPorts />
