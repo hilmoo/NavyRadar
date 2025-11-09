@@ -1,16 +1,18 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 using System.Windows.Input;
 using Frontend.Util;
 using Frontend.Views.Dialog;
-using Shared.Models;
-using Shared.Util;
+using Shared.Spec;
 
 namespace Frontend.ViewModels;
 
 public class MainMenuShipsVm : ObservableObject
 {
-    public List<Ship>? Ships { get; private set; }
+    public ObservableCollection<Ship> Ships { get; } = [];
 
+    [field: AllowNull, MaybeNull]
     public Ship CurrentShip
     {
         get;
@@ -20,110 +22,205 @@ public class MainMenuShipsVm : ObservableObject
             field = value;
             OnPropertyChanged();
         }
-    } = null!;
+    }
+
+    private bool IsLoading
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAdmin
+    {
+        get;
+        init
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    } = false;
 
     public ICommand UpdateShipCommand { get; }
     public ICommand NewShipCommand { get; }
+    public ICommand RefreshCommand { get; }
 
     public MainMenuShipsVm()
     {
-        LoadDummyData();
-        UpdateShipCommand = new SimpleRelayCommand(OnUpdateShip);
-        NewShipCommand = new SimpleRelayCommand(OnNewShip);
-    }
-
-    private void LoadDummyData()
-    {
-        Ships =
-        [
-            new Ship
+        UpdateShipCommand = new SimpleRelayCommand(async void () =>
             {
-                Id = 1,
-                ImoNumber = "IMO1234567",
-                MmsiNumber = "123456789",
-                Name = "Ever Given",
-                Type = nameof(ShipType.CargoVessels),
-                YearBuild = 2018,
-                LengthOverall = 400,
-                GrossTonnage = 220940
+                try
+                {
+                    await OnUpdateShipAsync();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                }
             },
-
-            new Ship
+            () => !IsLoading);
+        NewShipCommand = new SimpleRelayCommand(async void () =>
+        {
+            try
             {
-                Id = 2,
-                ImoNumber = "IMO7654321",
-                MmsiNumber = "987654321",
-                Name = "Symphony of the Seas",
-                Type = nameof(ShipType.CargoVessels),
-                YearBuild = 2018,
-                LengthOverall = 361,
-                GrossTonnage = 228081
-            },
-
-            new Ship
-            {
-                Id = 3,
-                ImoNumber = "IMO1122334",
-                MmsiNumber = "112233445",
-                Name = "Queen Mary 2",
-                Type = nameof(ShipType.CargoVessels),
-                YearBuild = 2004,
-                LengthOverall = 345,
-                GrossTonnage = 148528
+                await OnNewShipAsync();
             }
-        ];
+            catch (Exception e)
+            {
+                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+            }
+        }, () => !IsLoading);
+        RefreshCommand = new SimpleRelayCommand(async void () =>
+        {
+            try
+            {
+                await LoadShipsAsync();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+            }
+        }, () => !IsLoading);
+
+        _ = LoadShipsAsync();
     }
 
-    private void OnUpdateShip()
+    private async Task LoadShipsAsync()
     {
-        Debug.WriteLine(CurrentShip);
-        var dialog = new MainMenuShipDialog(CurrentShip);
+        IsLoading = true;
+        Ships.Clear();
+
+        try
+        {
+            var shipsFromServer = await ApiService.ApiClient.ShipAllAsync();
+            foreach (var ship in shipsFromServer)
+            {
+                Ships.Add(ship);
+            }
+        }
+        catch (ApiException apiEx)
+        {
+            MessageBox.Show($"Could not load ships. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                "API Error");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnUpdateShipAsync()
+    {
+        var shipToEdit = new Ship
+        {
+            Id = CurrentShip.Id,
+            Name = CurrentShip.Name,
+            ImoNumber = CurrentShip.ImoNumber,
+            MmsiNumber = CurrentShip.MmsiNumber,
+            Type = CurrentShip.Type,
+            YearBuild = CurrentShip.YearBuild,
+            LengthOverall = CurrentShip.LengthOverall,
+            GrossTonnage = CurrentShip.GrossTonnage
+        };
+
+        var dialog = new MainMenuShipDialog(MapSpecToModel(shipToEdit));
 
         if (dialog.ShowDialog() == true)
         {
-            Debug.WriteLine("--- SHIP UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:            {dialog.Ship!.Id}");
-            Debug.WriteLine($"Name:          {dialog.Ship.Name}");
-            Debug.WriteLine($"IMO Number:    {dialog.Ship.ImoNumber}");
-            Debug.WriteLine($"MMSI Number:   {dialog.Ship.MmsiNumber}");
-            Debug.WriteLine($"Type:          {dialog.Ship.Type}");
-            Debug.WriteLine($"Year Build:    {dialog.Ship.YearBuild}");
-            Debug.WriteLine($"Length:        {dialog.Ship.LengthOverall}");
-            Debug.WriteLine($"Gross Tonnage: {dialog.Ship.GrossTonnage}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- SHIP UPDATE ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
+            IsLoading = true;
+            try
+            {
+                if (dialog.Ship != null)
+                {
+                    var updatedShip =
+                        await ApiService.ApiClient.ShipPUTAsync(dialog.Ship.Id, MapModelToSpec(dialog.Ship));
+
+                    var index = Ships.IndexOf(CurrentShip);
+                    if (index != -1)
+                    {
+                        Ships[index] = updatedShip;
+                    }
+                }
+            }
+            catch (ApiException apiEx)
+            {
+                MessageBox.Show($"Could not update ship. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                    "API Error");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 
-    private static void OnNewShip()
+    private async Task OnNewShipAsync()
     {
-        var dialog = new MainMenuShipDialog(null);
+        var dialog = new MainMenuShipDialog(MapSpecToModel(new Ship()));
 
         if (dialog.ShowDialog() == true)
         {
-            Debug.WriteLine("--- SHIP UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:            {dialog.Ship!.Id}");
-            Debug.WriteLine($"Name:          {dialog.Ship.Name}");
-            Debug.WriteLine($"IMO Number:    {dialog.Ship.ImoNumber}");
-            Debug.WriteLine($"MMSI Number:   {dialog.Ship.MmsiNumber}");
-            Debug.WriteLine($"Type:          {dialog.Ship.Type}");
-            Debug.WriteLine($"Year Build:    {dialog.Ship.YearBuild}");
-            Debug.WriteLine($"Length:        {dialog.Ship.LengthOverall}");
-            Debug.WriteLine($"Gross Tonnage: {dialog.Ship.GrossTonnage}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- SHIP NEW ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
+            IsLoading = true;
+            try
+            {
+                if (dialog.Ship != null)
+                {
+                    var newShip = await ApiService.ApiClient.ShipPOSTAsync(MapModelToSpec(dialog.Ship));
+
+                    Ships.Add(newShip);
+                }
+            }
+            catch (ApiException apiEx)
+            {
+                MessageBox.Show($"Could not create ship. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                    "API Error");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
+
+    private static Shared.Models.Ship MapSpecToModel(Ship spec) =>
+        new()
+        {
+            Id = spec.Id,
+            Name = spec.Name,
+            ImoNumber = spec.ImoNumber,
+            MmsiNumber = spec.MmsiNumber,
+            Type = spec.Type,
+            YearBuild = spec.YearBuild,
+            LengthOverall = spec.LengthOverall,
+            GrossTonnage = spec.GrossTonnage
+        };
+
+    private static Ship MapModelToSpec(Shared.Models.Ship model) =>
+        new()
+        {
+            Id = model.Id,
+            Name = model.Name,
+            ImoNumber = model.ImoNumber,
+            MmsiNumber = model.MmsiNumber,
+            Type = model.Type,
+            YearBuild = model.YearBuild,
+            LengthOverall = model.LengthOverall,
+            GrossTonnage = model.GrossTonnage
+        };
 }

@@ -5,9 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Frontend.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:RegisterVm}"
     d:DesignHeight="480"
     d:DesignWidth="800"
-    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
     mc:Ignorable="d">
 
     <Grid>
@@ -15,7 +15,6 @@
             Margin="10"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
             Command="{Binding HomeCommand}">
             <TextBlock
                 FontFamily="Segoe MDL2 Assets"
@@ -55,22 +54,34 @@
                     BorderThickness="1">
                     <StackPanel Width="320">
                         <TextBlock Margin="0,0,0,5" Text="Username" />
-                        <TextBox x:Name="UsernameInput" Margin="0,0,0,12" />
+                        <TextBox
+                            Margin="0,0,0,12"
+                            IsEnabled="{Binding !IsLoading}"
+                            Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Margin="0,0,0,5" Text="Email" />
-                        <TextBox x:Name="EmailInput" Margin="0,0,0,12" />
+                        <TextBox
+                            x:Name="EmailInput"
+                            Margin="0,0,0,12"
+                            IsEnabled="{Binding !IsLoading}"
+                            Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Margin="0,0,0,5" Text="Password" />
-                        <PasswordBox x:Name="PasswordInput" Margin="0,0,0,18" />
+                        <PasswordBox
+                            x:Name="PasswordInput"
+                            Margin="0,0,0,18"
+                            IsEnabled="{Binding !IsLoading}"
+                            PasswordChanged="PasswordBox_OnPasswordChanged" />
 
                         <Button
                             HorizontalAlignment="Right"
-                            Click="RegisterButton_Click"
-                            Content="Register" />
+                            Command="{Binding RegisterCommand}"
+                            Content="Register"
+                            IsEnabled="{Binding !IsLoading}" />
 
                         <TextBlock Margin="0,16,0,0" TextAlignment="Center">
                             <Run Text="Already have an account? " />
-                            <Hyperlink d:DataContext="{d:DesignInstance Type=vm:NavigationVm}" Command="{Binding SignInCommand}">
+                            <Hyperlink Command="{Binding SignInCommand}">
                                 SignIn
                             </Hyperlink>
                         </TextBlock>

@@ -20,13 +20,21 @@ public class PortService(NpgsqlDataSource dataSource) : IPortService
         const string sql =
             $"""
              INSERT INTO "port" (name, country_code, location)
-             VALUES (@Name, @CountryCode, @Location)
+             VALUES (@Name, @CountryCode, POINT(@LocationX, @LocationY))
              RETURNING {SelectColumns}
              """;
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Port>(sql, port);
+        var parameters = new
+        {
+            port.Name,
+            port.CountryCode,
+            LocationX = port.Location.X,
+            LocationY = port.Location.Y
+        };
+
+        return await conn.QuerySingleOrDefaultAsync<Port>(sql, parameters);
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -73,7 +81,7 @@ public class PortService(NpgsqlDataSource dataSource) : IPortService
              SET
                  name = @Name,
                  country_code = @CountryCode,
-                 location = @Location
+                 location = POINT(@LocationX, @LocationY)
              WHERE 
                  id = @Id
              RETURNING {SelectColumns}
@@ -81,6 +89,15 @@ public class PortService(NpgsqlDataSource dataSource) : IPortService
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Port>(sql, port);
+        var parameters = new
+        {
+            port.Name,
+            port.CountryCode,
+            LocationX = port.Location.X,
+            LocationY = port.Location.Y,
+            port.Id
+        };
+
+        return await conn.QuerySingleOrDefaultAsync<Port>(sql, parameters);
     }
 }

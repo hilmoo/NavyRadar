@@ -5,9 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Frontend.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:SignInVm}"
     d:DesignHeight="480"
     d:DesignWidth="800"
-    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
     mc:Ignorable="d">
 
     <Grid>
@@ -15,7 +15,6 @@
             Margin="10"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
             Command="{Binding HomeCommand}">
             <TextBlock
                 FontFamily="Segoe MDL2 Assets"
@@ -56,19 +55,26 @@
                     BorderThickness="1">
                     <StackPanel Width="320">
                         <TextBlock Margin="0,0,0,5" Text="Username" />
-                        <TextBox x:Name="UsernameInput" Margin="0,0,0,12" />
+                        <TextBox
+                            Margin="0,0,0,12"
+                            IsEnabled="{Binding !IsLoading}"
+                            Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
 
                         <TextBlock Margin="0,0,0,5" Text="Password" />
-                        <PasswordBox x:Name="PasswordInput" Margin="0,0,0,18" />
+                        <PasswordBox
+                            Margin="0,0,0,18"
+                            IsEnabled="{Binding !IsLoading}"
+                            PasswordChanged="PasswordBox_OnPasswordChanged" />
 
                         <Button
                             HorizontalAlignment="Right"
-                            Click="SignInButton_Click"
-                            Content="Sign In" />
+                            Command="{Binding SignInCommand}"
+                            Content="Sign In"
+                            IsEnabled="{Binding !IsLoading}" />
 
                         <TextBlock Margin="0,16,0,0" TextAlignment="Center">
                             <Run Text="New to Navy Radar? " />
-                            <Hyperlink d:DataContext="{d:DesignInstance Type=vm:NavigationVm}" Command="{Binding RegisterCommand}">
+                            <Hyperlink Command="{Binding RegisterCommand}">
                                 Create an account
                             </Hyperlink>
                         </TextBlock>

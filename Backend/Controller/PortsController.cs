@@ -1,14 +1,18 @@
 ﻿using Backend.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
 namespace Backend.Controller;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class PortsController(IPortService portService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(IEnumerable<Port>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllPorts()
     {
         var ports = await portService.GetAllAsync();
@@ -16,6 +20,9 @@ public class PortsController(IPortService portService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(Port), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPortById(int id)
     {
         var port = await portService.GetByIdAsync(id);
@@ -28,6 +35,11 @@ public class PortsController(IPortService portService) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Port), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePort([FromBody] Port port)
     {
         if (!ModelState.IsValid)
@@ -45,6 +57,12 @@ public class PortsController(IPortService portService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Port), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdatePort(int id, [FromBody] Port port)
     {
         if (id != port.Id)
@@ -67,6 +85,11 @@ public class PortsController(IPortService portService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePort(int id)
     {
         var deleted = await portService.DeleteAsync(id);

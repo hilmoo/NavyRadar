@@ -1,111 +1,222 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using Frontend.Util;
 using Frontend.Views.Dialog;
-using Shared.Models;
+using Shared.Spec;
 
-namespace Frontend.ViewModels;
-
-public class MainMenuAccountsVm : ObservableObject
+namespace Frontend.ViewModels
 {
-    public List<Account>? Accounts { get; private set; }
-
-    public Account CurrentAccount
+    public class MainMenuAccountsVm : ObservableObject
     {
-        get;
-        set
+        public ObservableCollection<Account> Accounts { get; } = [];
+
+        public Account CurrentAccount
         {
-            if (field == value) return;
-            field = value;
-            OnPropertyChanged();
-        }
-    } = null!;
-
-    public ICommand UpdateAccountCommand { get; }
-    public ICommand NewAccountCommand { get; }
-
-    public MainMenuAccountsVm()
-    {
-        LoadDummyData();
-        UpdateAccountCommand = new SimpleRelayCommand(OnUpdateAccount);
-        NewAccountCommand = new SimpleRelayCommand(OnNewAccount);
-    }
-
-    private void OnUpdateAccount()
-    {
-        Debug.WriteLine(CurrentAccount);
-        var dialog = new MainMenuAccountDialog(CurrentAccount);
-
-        if (dialog.ShowDialog() == true)
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:       {dialog.Account!.Id}");
-            Debug.WriteLine($"Username: {dialog.Account.Username}");
-            Debug.WriteLine($"Email:    {dialog.Account.Email}");
-            Debug.WriteLine($"Password: {dialog.Account.Password}");
-            Debug.WriteLine($"Role:     {dialog.Account.Role}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
-        }
-    }
-
-    private static void OnNewAccount()
-    {
-        var dialog = new MainMenuAccountDialog(null);
-
-        if (dialog.ShowDialog() == true)
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:       {dialog.Account!.Id}");
-            Debug.WriteLine($"Username: {dialog.Account.Username}");
-            Debug.WriteLine($"Email:    {dialog.Account.Email}");
-            Debug.WriteLine($"Password: {dialog.Account.Password}");
-            Debug.WriteLine($"Role:     {dialog.Account.Role}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
-        }
-    }
-
-    private void LoadDummyData()
-    {
-        Accounts =
-        [
-            new Account
+            get;
+            set
             {
-                Id = 1,
-                Username = "captain_jack",
-                Password = "blackpearl",
-                Email = "email@mail.com",
-                Role = "Admin"
-            },
-            new Account
-            {
-                Id = 2,
-                Username = "first_mate",
-                Password = "seadog",
-                Email = "email1@mail.com",
-                Role = "User"
-            },
-            new Account
-            {
-                Id = 3,
-                Username = "deckhand",
-                Password = "sailor",
-                Email = "email2@mail.com",
-                Role = "User"
+                if (field == value) return;
+                field = value;
+                OnPropertyChanged();
             }
-        ];
+        } = null!;
+        
+        public bool IsAdmin
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        } = false;
+
+        private bool IsLoading
+        {
+            get;
+            set
+            {
+                if (field == value) return;
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand UpdateAccountCommand { get; }
+        public ICommand NewAccountCommand { get; }
+        public ICommand RefreshCommand { get; }
+
+        public MainMenuAccountsVm()
+        {
+            UpdateAccountCommand = new SimpleRelayCommand(async void () =>
+                {
+                    try
+                    {
+                        await OnUpdateAccountAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                    }
+                },
+                () => !IsLoading);
+            NewAccountCommand = new SimpleRelayCommand(async void () =>
+            {
+                try
+                {
+                    await OnNewAccountAsync();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                }
+            }, () => !IsLoading);
+            RefreshCommand = new SimpleRelayCommand(async void () =>
+            {
+                try
+                {
+                    await LoadAccountsAsync();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                }
+            }, () => !IsLoading);
+
+            _ = LoadAccountsAsync();
+        }
+
+        private async Task LoadAccountsAsync()
+        {
+            IsLoading = true;
+            Accounts.Clear();
+
+            try
+            {
+                var accountsFromServer = await ApiService.ApiClient.AccountsAllAsync();
+                foreach (var account in accountsFromServer)
+                {
+                    Accounts.Add(account);
+                }
+            }
+            catch (ApiException apiEx)
+            {
+                MessageBox.Show($"Could not load accounts. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                    "API Error");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task OnUpdateAccountAsync()
+        {
+            var accountToEdit = new Account
+            {
+                Id = CurrentAccount.Id,
+                Username = CurrentAccount.Username,
+                Email = CurrentAccount.Email,
+                Password = CurrentAccount.Password,
+                Role = CurrentAccount.Role
+            };
+
+            var dialog = new MainMenuAccountDialog(MapSpecToModel(accountToEdit));
+
+            if (dialog.ShowDialog() == true)
+            {
+                IsLoading = true;
+                try
+                {
+                    Debug.Assert(dialog.Account != null);
+                    var updatedAccount =
+                        await ApiService.ApiClient.AccountsPUTAsync(dialog.Account.Id, MapModelToSpec(dialog.Account));
+
+                    // Find the original account in the collection and replace it
+                    var index = Accounts.IndexOf(CurrentAccount);
+                    if (index != -1)
+                    {
+                        Accounts[index] = updatedAccount;
+                    }
+
+                    Debug.WriteLine("Update successful.");
+                }
+                catch (ApiException apiEx)
+                {
+                    MessageBox.Show(
+                        $"Could not update account. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                        "API Error");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+
+        private async Task OnNewAccountAsync()
+        {
+            var dialog = new MainMenuAccountDialog(MapSpecToModel(new Account()));
+
+            if (dialog.ShowDialog() == true)
+            {
+                IsLoading = true;
+                try
+                {
+                    if (dialog.Account != null)
+                    {
+                        var newAccount = await ApiService.ApiClient.AccountsPOSTAsync(MapModelToSpec(dialog.Account));
+
+                        Accounts.Add(newAccount);
+                    }
+
+                    Debug.WriteLine("Creation successful.");
+                }
+                catch (ApiException apiEx)
+                {
+                    MessageBox.Show(
+                        $"Could not create account. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                        "API Error");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+
+        private static Shared.Models.Account MapSpecToModel(Account spec) =>
+            new()
+            {
+                Id = spec.Id,
+                Username = spec.Username,
+                Email = spec.Email,
+                Password = spec.Password,
+                Role = spec.Role
+            };
+
+        private static Account MapModelToSpec(Shared.Models.Account model) =>
+            new()
+            {
+                Id = model.Id,
+                Username = model.Username,
+                Email = model.Email,
+                Password = model.Password,
+                Role = model.Role
+            };
     }
 }

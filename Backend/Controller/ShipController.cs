@@ -1,4 +1,5 @@
 ﻿using Backend.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
@@ -9,6 +10,8 @@ namespace Backend.Controller;
 public class ShipController(IShipService shipService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(IEnumerable<Ship>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllShips()
     {
         var ships = await shipService.GetAllAsync();
@@ -16,6 +19,9 @@ public class ShipController(IShipService shipService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(Ship), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetShipById(int id)
     {
         var ship = await shipService.GetByIdAsync(id);
@@ -28,6 +34,11 @@ public class ShipController(IShipService shipService) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Ship), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateShip([FromBody] Ship ship)
     {
         if (!ModelState.IsValid)
@@ -45,6 +56,12 @@ public class ShipController(IShipService shipService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Ship), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateShip(int id, [FromBody] Ship ship)
     {
         if (id != ship.Id)
@@ -67,6 +84,11 @@ public class ShipController(IShipService shipService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteShip(int id)
     {
         var deleted = await shipService.DeleteAsync(id);

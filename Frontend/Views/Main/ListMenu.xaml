@@ -45,7 +45,8 @@
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding AccountsCommand}"
                 Header="Accounts"
-                IsChecked="{Binding IsAccountsViewSelected, Mode=OneWay}" />
+                IsChecked="{Binding IsAccountsViewSelected, Mode=OneWay}"
+                IsEnabled="{Binding IsAdmin}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding MyAccountCommand}"

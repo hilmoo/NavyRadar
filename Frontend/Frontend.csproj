@@ -42,15 +42,11 @@
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\Dialog\MainMenAccountDialog.xaml">
+    <Page Update="Views\Dialog\MainMenuAccountDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Service\" />
   </ItemGroup>
 
 </Project>

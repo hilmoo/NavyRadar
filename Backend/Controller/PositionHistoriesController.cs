@@ -1,4 +1,5 @@
 ﻿using Backend.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
@@ -6,10 +7,14 @@ using Shared.Models;
 namespace Backend.Controller;
 
 [ApiController]
+[Authorize(Roles = "Admin,Captain")]
 [Route("api/[controller]")]
 public class PositionHistoriesController(IPositionHistoryService positionHistoryService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<PositionHistory>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAllPositionHistories()
     {
         var positionHistories = await positionHistoryService.GetAllAsync();
@@ -17,6 +22,10 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(PositionHistory), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPositionHistoryById(int id)
     {
         var positionHistory = await positionHistoryService.GetByIdAsync(id);
@@ -29,6 +38,9 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpGet("sail/{sailId:int}")]
+    [ProducesResponseType(typeof(IEnumerable<PositionHistory>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetPositionHistoriesBySailId(int sailId)
     {
         var positionHistories = await positionHistoryService.GetBySailIdAsync(sailId);
@@ -36,6 +48,10 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(PositionHistory), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePositionHistory(
         [FromBody] PositionHistory positionHistory)
     {
@@ -55,6 +71,11 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(PositionHistory), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdatePositionHistory(int id, [FromBody] PositionHistory positionHistory)
     {
         if (id != positionHistory.Id)
@@ -77,6 +98,10 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePositionHistory(int id)
     {
         var deleted = await positionHistoryService.DeleteAsync(id);

@@ -1,109 +1,218 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using Frontend.Util;
 using Frontend.Views.Dialog;
-using NpgsqlTypes;
-using Shared.Models;
+using Shared.Spec;
 
-namespace Frontend.ViewModels;
-
-public class MainMenuPortsVm : ObservableObject
+namespace Frontend.ViewModels
 {
-    public List<Port>? Ports { get; private set; }
-
-    public Port CurrentPort
+    public class MainMenuPortsVm : ObservableObject
     {
-        get;
-        set
+        public ObservableCollection<Port> Ports { get; } = [];
+
+        public Port CurrentPort
         {
-            if (field == value) return;
-            field = value;
-            OnPropertyChanged();
-        }
-    } = null!;
-
-    public ICommand UpdatePortCommand { get; }
-    public ICommand NewPortCommand { get; }
-
-    public MainMenuPortsVm()
-    {
-        LoadDummyData();
-        UpdatePortCommand = new SimpleRelayCommand(OnUpdatePort);
-        NewPortCommand = new SimpleRelayCommand(OnNewPort);
-    }
-
-    private void OnUpdatePort()
-    {
-        Debug.WriteLine(CurrentPort);
-        var dialog = new MainMenuPortDialog(CurrentPort);
-
-        if (dialog.ShowDialog() == true)
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:            {dialog.Port!.Id}");
-            Debug.WriteLine($"Name:          {dialog.Port.Name}");
-            Debug.WriteLine($"CountryCode:    {dialog.Port.CountryCode}");
-            Debug.WriteLine($"Location:   {dialog.Port.Location}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
-        }
-    }
-
-    private static void OnNewPort()
-    {
-        var dialog = new MainMenuPortDialog(null);
-
-        if (dialog.ShowDialog() == true)
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine($"User clicked OK.");
-            Debug.WriteLine($"Id:            {dialog.Port!.Id}");
-            Debug.WriteLine($"Name:          {dialog.Port.Name}");
-            Debug.WriteLine($"CountryCode:    {dialog.Port.CountryCode}");
-            Debug.WriteLine($"Location:   {dialog.Port.Location}");
-            Debug.WriteLine("------------------------");
-        }
-        else
-        {
-            Debug.WriteLine("--- PORT UPDATE ---");
-            Debug.WriteLine("User clicked Cancel. No changes made.");
-            Debug.WriteLine("------------------------");
-        }
-    }
-
-    private void LoadDummyData()
-    {
-        Ports =
-        [
-            new Port
+            get;
+            set
             {
-                Id = 1,
-                Name = "Port of Singapore",
-                CountryCode = "SG",
-                Location = new NpgsqlPoint { X = 1.2644, Y = 103.8401 }
-            },
-
-            new Port
-            {
-                Id = 2,
-                Name = "Port of Rotterdam",
-                CountryCode = "NL",
-                Location = new NpgsqlPoint { X = 51.9470, Y = 4.1399 }
-            },
-
-            new Port
-            {
-                Id = 3,
-                Name = "Port of Los Angeles",
-                CountryCode = "US",
-                Location = new NpgsqlPoint { X = 33.7292, Y = -118.2620 }
+                if (field == value) return;
+                field = value;
+                OnPropertyChanged();
             }
-        ];
+        } = null!;
+
+        private bool IsLoading
+        {
+            get;
+            set
+            {
+                if (field == value) return;
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsAdmin
+        {
+            get;
+            init
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        } = false;
+
+
+        public ICommand UpdatePortCommand { get; }
+        public ICommand NewPortCommand { get; }
+        public ICommand RefreshCommand { get; }
+
+        public MainMenuPortsVm()
+        {
+            UpdatePortCommand = new SimpleRelayCommand(async void () =>
+                {
+                    try
+                    {
+                        await OnUpdatePortAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                    }
+                },
+                () => !IsLoading);
+            NewPortCommand = new SimpleRelayCommand(async void () =>
+            {
+                try
+                {
+                    await OnNewPortAsync();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                }
+            }, () => !IsLoading);
+            RefreshCommand = new SimpleRelayCommand(async void () =>
+            {
+                try
+                {
+                    await LoadPortsAsync();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
+                }
+            }, () => !IsLoading);
+
+            _ = LoadPortsAsync();
+        }
+
+
+        private async Task LoadPortsAsync()
+        {
+            IsLoading = true;
+            Ports.Clear();
+
+            try
+            {
+                var portsFromServer = await ApiService.ApiClient.PortsAllAsync();
+                foreach (var port in portsFromServer)
+                {
+                    Ports.Add(port);
+                }
+            }
+            catch (ApiException apiEx)
+            {
+                MessageBox.Show($"Could not load ports. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                    "API Error");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task OnUpdatePortAsync()
+        {
+            var portToEdit = new Port
+            {
+                Id = CurrentPort.Id,
+                Name = CurrentPort.Name,
+                CountryCode = CurrentPort.CountryCode,
+                Location = new NpgsqlPoint { X = CurrentPort.Location.X, Y = CurrentPort.Location.Y }
+            };
+
+            var dialog = new MainMenuPortDialog(MapSpecToModel(portToEdit));
+
+            if (dialog.ShowDialog() == true)
+            {
+                IsLoading = true;
+                try
+                {
+                    if (dialog.Port != null)
+                    {
+                        var updatedPort =
+                            await ApiService.ApiClient.PortsPUTAsync(dialog.Port.Id, MapModelToSpec(dialog.Port));
+
+                        var index = Ports.IndexOf(CurrentPort);
+                        if (index != -1)
+                        {
+                            Ports[index] = updatedPort;
+                        }
+                    }
+                }
+                catch (ApiException apiEx)
+                {
+                    MessageBox.Show(
+                        $"Could not update port. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                        "API Error");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+
+        private async Task OnNewPortAsync()
+        {
+            var dialog = new MainMenuPortDialog(MapSpecToModel(new Port()));
+
+            if (dialog.ShowDialog() == true)
+            {
+                IsLoading = true;
+                try
+                {
+                    if (dialog.Port != null)
+                    {
+                        var newPort = await ApiService.ApiClient.PortsPOSTAsync(MapModelToSpec(dialog.Port));
+
+                        Ports.Add(newPort);
+                    }
+                }
+                catch (ApiException apiEx)
+                {
+                    MessageBox.Show(
+                        $"Could not create port. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
+                        "API Error");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+
+        private static Shared.Models.Port MapSpecToModel(Port spec) =>
+            new()
+            {
+                Id = spec.Id,
+                Name = spec.Name,
+                CountryCode = spec.CountryCode,
+                Location = new NpgsqlTypes.NpgsqlPoint(spec.Location.X, spec.Location.Y)
+            };
+
+        private static Port MapModelToSpec(Shared.Models.Port model) =>
+            new()
+            {
+                Id = model.Id,
+                Name = model.Name,
+                CountryCode = model.CountryCode,
+                Location = new NpgsqlPoint { X = model.Location.X, Y = model.Location.Y }
+            };
     }
 }

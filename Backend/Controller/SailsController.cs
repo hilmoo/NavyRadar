@@ -1,14 +1,18 @@
 ﻿using Backend.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
 namespace Backend.Controller;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class SailsController(ISailService sailService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(IEnumerable<Sail>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSails()
     {
         var sails = await sailService.GetAllAsync();
@@ -16,6 +20,9 @@ public class SailsController(ISailService sailService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(Sail), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSailById(int id)
     {
         var sail = await sailService.GetByIdAsync(id);
@@ -28,6 +35,11 @@ public class SailsController(ISailService sailService) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Sail), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateSail([FromBody] Sail sail)
     {
         if (!ModelState.IsValid)
@@ -45,6 +57,12 @@ public class SailsController(ISailService sailService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(typeof(Sail), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSail(int id, [FromBody] Sail sail)
     {
         if (id != sail.Id)
@@ -67,6 +85,11 @@ public class SailsController(ISailService sailService) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSail(int id)
     {
         var deleted = await sailService.DeleteAsync(id);

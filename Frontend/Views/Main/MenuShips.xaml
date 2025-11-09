@@ -51,7 +51,8 @@
                 HorizontalAlignment="Center"
                 d:DataContext="{d:DesignInstance Type=vm:MainMenuShipsVm}"
                 Command="{Binding NewShipCommand}"
-                Content="New Ship" />
+                Content="New Ship"
+                IsEnabled="{Binding IsAdmin}" />
         </Grid>
 
         <GridSplitter
@@ -88,7 +89,8 @@
                                                 Margin="0,0,20,20"
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuShips, Path=DataContext.UpdateShipCommand}"
-                                                Content="Update Ship" />
+                                                Content="Update Ship"
+                                                IsEnabled="{Binding ElementName=RootMenuUsers, Path=DataContext.IsAdmin}" />
                                         </Grid>
 
                                         <Border

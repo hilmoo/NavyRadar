@@ -1,19 +1,27 @@
 ﻿using Frontend.Util;
 using System.Windows.Input;
+using Shared.Models;
 
 namespace Frontend.ViewModels;
 
 public class NavigationVm : ViewModelBase
 {
+    private readonly HomeVm _homeVm;
+    private readonly SignInVm _signInVm;
+    private readonly RegisterVm _registerVm;
+
     public object CurrentView
     {
         get;
         private set
         {
+            if (field == value) return;
             field = value;
             OnPropertyChanged();
         }
     }
+
+    public Account? CurrentAccount { get; set; }
 
     public ICommand HomeCommand { get; set; }
     public ICommand SignInCommand { get; set; }
@@ -21,25 +29,48 @@ public class NavigationVm : ViewModelBase
     public ICommand MainCommand { get; set; }
 
 
-    private void Home(object? obj) => CurrentView = new HomeVm();
-    private void SignIn(object? obj) => CurrentView = new SignInVm();
-    private void Register(object? obj) => CurrentView = new RegisterVm();
-    private void Main(object? obj) => CurrentView = new MainVm();
+    private void Home(object? obj) => CurrentView = _homeVm;
+    private void SignIn(object? obj) => CurrentView = _signInVm;
+    private void Register(object? obj) => CurrentView = _registerVm;
+
+    private void Main(object? obj)
+    {
+        if (CurrentAccount != null)
+        {
+            NavigateToMain(CurrentAccount);
+        }
+    }
 
 
     public NavigationVm()
     {
+        _homeVm = new HomeVm();
+        _signInVm = new SignInVm(this);
+        _registerVm = new RegisterVm(this);
+
         HomeCommand = new RelayCommand(Home);
         SignInCommand = new RelayCommand(SignIn);
         RegisterCommand = new RelayCommand(Register);
         MainCommand = new RelayCommand(Main);
 
-        // Startup Page
-        CurrentView = new MainVm();
+        CurrentView = new HomeVm();
     }
 
-    public void NavigateTo(object viewModel)
+    public void NavigateToHome()
     {
-        CurrentView = viewModel;
+        CurrentView = _homeVm;
+    }
+
+    public void SignOut()
+    {
+        CurrentAccount = null;
+        CurrentView = _homeVm;
+    }
+
+    public void NavigateToMain(Account userAccount)
+    {
+        CurrentAccount = userAccount;
+        var mainVm = new MainVm(this);
+        CurrentView = mainVm;
     }
 }

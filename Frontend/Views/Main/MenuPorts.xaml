@@ -52,7 +52,8 @@
                 HorizontalAlignment="Center"
                 d:DataContext="{d:DesignInstance Type=vm:MainMenuPortsVm}"
                 Command="{Binding NewPortCommand}"
-                Content="New Port" />
+                Content="New Port"
+                IsEnabled="{Binding IsAdmin}" />
         </Grid>
 
         <GridSplitter
@@ -89,7 +90,8 @@
                                                 Margin="0,0,20,20"
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuPorts, Path=DataContext.UpdatePortCommand}"
-                                                Content="Update Port" />
+                                                Content="Update Port"
+                                                IsEnabled="{Binding ElementName=RootMenuUsers, Path=DataContext.IsAdmin}" />
                                         </Grid>
 
                                         <Border
@@ -185,7 +187,7 @@
                                                     Grid.Row="0"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,10"
-                                                    Text="{Binding Location.Latitude, StringFormat='{}{0:F6}'}" />
+                                                    Text="{Binding Location.X, StringFormat='{}{0:F1}'}" />
 
                                                 <TextBlock
                                                     Grid.Row="1"
@@ -195,7 +197,7 @@
                                                 <TextBlock
                                                     Grid.Row="1"
                                                     Grid.Column="1"
-                                                    Text="{Binding Location.Longitude, StringFormat='{}{0:F6}'}" />
+                                                    Text="{Binding Location.Y, StringFormat='{}{0:F1}'}" />
                                             </Grid>
                                         </Border>
                                     </StackPanel>

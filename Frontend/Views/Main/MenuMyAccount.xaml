@@ -13,6 +13,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Ellipse
@@ -110,6 +112,24 @@
             d:DataContext="{d:DesignInstance Type=vm:MainMenuMyAccountVm}"
             Command="{Binding UpdateProfileCommand}"
             Content="Update Profile" />
+
+        <Button
+            Grid.Row="3"
+            Width="150"
+            Margin="0,0,20,20"
+            HorizontalAlignment="Center"
+            d:DataContext="{d:DesignInstance Type=vm:MainMenuMyAccountVm}"
+            Command="{Binding BackToHomeCommand}"
+            Content="Back To Home" />
+
+        <Button
+            Grid.Row="4"
+            Width="150"
+            Margin="0,0,20,20"
+            HorizontalAlignment="Center"
+            d:DataContext="{d:DesignInstance Type=vm:MainMenuMyAccountVm}"
+            Command="{Binding SignOutCommand}"
+            Content="Sign Out" />
 
     </Grid>
 </UserControl>

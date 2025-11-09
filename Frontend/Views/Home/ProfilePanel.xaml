@@ -23,7 +23,18 @@
             VerticalAlignment="Stretch"
             d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
             Command="{Binding SignInCommand}"
-            Content="Sign In" />
+            Content="Sign In">
+            <Button.Style>
+                <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentAccount}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
 
         <Button
             Grid.Column="1"
@@ -32,6 +43,38 @@
             VerticalAlignment="Stretch"
             d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
             Command="{Binding RegisterCommand}"
-            Content="Register" />
+            Content="Register">
+            <Button.Style>
+                <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentAccount}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <Button
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="4,4,4,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            d:DataContext="{d:DesignInstance Type=vm:NavigationVm}"
+            Command="{Binding MainCommand}"
+            Content="Go To Dashboard">
+            <Button.Style>
+                <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentAccount}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
     </Grid>
 </UserControl>
