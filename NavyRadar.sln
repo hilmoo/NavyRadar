@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "Frontend\Frontend.csproj", "{53B2B409-BD49-49C7-B2D8-0B25ADB0E103}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Frontend", "NavyRadar.Frontend\NavyRadar.Frontend.csproj", "{53B2B409-BD49-49C7-B2D8-0B25ADB0E103}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{C572AFA0-74F4-41E3-BC84-BC045041CB02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Shared", "NavyRadar.Shared\NavyRadar.Shared.csproj", "{C572AFA0-74F4-41E3-BC84-BC045041CB02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.csproj", "{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Backend", "NavyRadar.Backend\NavyRadar.Backend.csproj", "{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
