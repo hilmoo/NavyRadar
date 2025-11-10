@@ -1,0 +1,21 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:home="clr-namespace:Frontend.Views.Home"
+    xmlns:main="clr-namespace:Frontend.Views.Main"
+    xmlns:register="clr-namespace:Frontend.Views.Register"
+    xmlns:signin="clr-namespace:Frontend.Views.SignIn"
+    xmlns:vm="clr-namespace:Frontend.ViewModels">
+    <DataTemplate DataType="{x:Type vm:HomeVm}">
+        <home:HomeIndex />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SignInVm}">
+        <signin:SignInIndex />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:RegisterVm}">
+        <register:RegisterIndex />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:MainVm}">
+        <main:MainIndex />
+    </DataTemplate>
+</ResourceDictionary>

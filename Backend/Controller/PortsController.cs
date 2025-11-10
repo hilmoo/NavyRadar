@@ -6,7 +6,6 @@ using Shared.Models;
 namespace Backend.Controller;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class PortsController(IPortService portService) : ControllerBase
 {

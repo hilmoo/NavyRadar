@@ -1,6 +1,7 @@
 ﻿using Backend.IService;
 using Npgsql;
 using Dapper;
+using Shared.Domain;
 using Shared.Models;
 
 namespace Backend.Service;
@@ -57,6 +58,29 @@ public class SailService(NpgsqlDataSource dataSource) : ISailService
         const string sql = $"""SELECT {SelectColumns} FROM "sail";""";
 
         return await conn.QueryAsync<Sail>(sql);
+    }
+
+    public async Task<IEnumerable<ActiveSailPosition>> GetAllActiveSailPositionAsync()
+    {
+        const string sql =
+            """
+            SELECT DISTINCT ON (ph.sail_id)
+              ph.sail_id AS SailId,
+              s.ship_id AS ShipId,
+              sh.name AS ShipName,
+              sh.type AS ShipType,
+              ph.coordinates AS Coordinates,
+              ph.timestamp AS PositionTime
+            FROM position_history ph
+            JOIN sail s ON s.id = ph.sail_id
+            JOIN ship sh ON sh.id = s.ship_id
+            WHERE s.status = 'Sailing'
+            ORDER BY ph.sail_id, ph.timestamp DESC;
+            """;
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        return await conn.QueryAsync<ActiveSailPosition>(sql);
     }
 
     public async Task<Sail?> GetByIdAsync(int id)

@@ -138,7 +138,6 @@ namespace Frontend.ViewModels
                     var updatedAccount =
                         await ApiService.ApiClient.AccountsPUTAsync(dialog.Account.Id, MapModelToSpec(dialog.Account));
 
-                    // Find the original account in the collection and replace it
                     var index = Accounts.IndexOf(CurrentAccount);
                     if (index != -1)
                     {

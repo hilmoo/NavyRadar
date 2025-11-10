@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Frontend.ViewModels"
     d:Background="White"
+    d:DataContext="{d:DesignInstance Type=vm:HomeVm}"
     d:DesignHeight="1000"
     d:DesignWidth="300"
     mc:Ignorable="d">
@@ -19,107 +21,33 @@
                         Margin="0,0,0,5"
                         HorizontalAlignment="Left"
                         Text="Name" />
-                    <TextBox x:Name="ShipSearchTextBox" />
+                    <TextBox x:Name="ShipSearchTextBox" Text="{Binding ShipNameFilter, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
                 <Separator Margin="0,5" />
                 <StackPanel Orientation="Vertical">
+
                     <TextBlock
                         Margin="0,0,0,5"
                         HorizontalAlignment="Left"
                         Text="Type" />
-                    <CheckBox Content="Cargo Vessels" />
-                    <CheckBox Content="Tankers" />
-                    <CheckBox Content="Passenger Vessels" />
-                    <CheckBox Content="High Speed Craft" />
-                    <CheckBox Content="Tugs &amp; Special Craft" />
-                    <CheckBox Content="Fishing" />
-                    <CheckBox Content="Pleasure Craft" />
-                    <CheckBox Content="Navigation Aids" />
-                    <CheckBox Content="Unspecified Ships" />
+                    <CheckBox Content="Cargo Vessels" IsChecked="{Binding IsCargoVesselsChecked}" />
+                    <CheckBox Content="Tankers" IsChecked="{Binding IsTankersChecked}" />
+                    <CheckBox Content="Passenger Vessels" IsChecked="{Binding IsPassengerVesselsChecked}" />
+                    <CheckBox Content="High Speed Craft" IsChecked="{Binding IsHighSpeedCraftChecked}" />
+                    <CheckBox Content="Tugs &amp; Special Craft" IsChecked="{Binding IsTugsAndSpecialCraftChecked}" />
+                    <CheckBox Content="Fishing" IsChecked="{Binding IsFishingChecked}" />
+                    <CheckBox Content="Pleasure Craft" IsChecked="{Binding IsPleasureCraftChecked}" />
+                    <CheckBox Content="Navigation Aids" IsChecked="{Binding IsNavigationAidsChecked}" />
+                    <CheckBox Content="Unspecified Ships" IsChecked="{Binding IsUnspecifiedShipsChecked}" />
                 </StackPanel>
                 <Separator Margin="0,5" />
                 <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Left"
-                        Text="Origin" />
-                    <TextBox />
+                    <Button
+                        Margin="0,15,0,0"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding ApplyFilterCommand}"
+                        Content="Apply Filter" />
                 </StackPanel>
-                <Separator Margin="0,5" />
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Left"
-                        Text="Destination" />
-                    <TextBox />
-                </StackPanel>
-                <Separator Margin="0,5" />
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Left"
-                        Text="Year of Build" />
-                    <Grid VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
-                        <TextBlock
-                            Grid.Column="1"
-                            Margin="8,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="-" />
-                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
-                    </Grid>
-                </StackPanel>
-                <Separator Margin="0,5" />
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Left"
-                        Text="Length Overall" />
-                    <Grid VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
-                        <TextBlock
-                            Grid.Column="1"
-                            Margin="8,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="-" />
-                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
-                    </Grid>
-                </StackPanel>
-                <Separator Margin="0,5" />
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        Margin="0,0,0,5"
-                        HorizontalAlignment="Left"
-                        Text="Gross Tonnage" />
-                    <Grid VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" VerticalContentAlignment="Center" />
-                        <TextBlock
-                            Grid.Column="1"
-                            Margin="8,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="-" />
-                        <TextBox Grid.Column="2" VerticalContentAlignment="Center" />
-                    </Grid>
-                </StackPanel>
-                <Separator Margin="0,5" />
             </StackPanel>
         </ScrollViewer>
     </Border>

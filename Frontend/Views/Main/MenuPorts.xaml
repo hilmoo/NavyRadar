@@ -91,7 +91,7 @@
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuPorts, Path=DataContext.UpdatePortCommand}"
                                                 Content="Update Port"
-                                                IsEnabled="{Binding ElementName=RootMenuUsers, Path=DataContext.IsAdmin}" />
+                                                IsEnabled="{Binding ElementName=RootMenuPorts, Path=DataContext.IsAdmin}" />
                                         </Grid>
 
                                         <Border

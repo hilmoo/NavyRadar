@@ -90,7 +90,7 @@
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuShips, Path=DataContext.UpdateShipCommand}"
                                                 Content="Update Ship"
-                                                IsEnabled="{Binding ElementName=RootMenuUsers, Path=DataContext.IsAdmin}" />
+                                                IsEnabled="{Binding ElementName=RootMenuShips, Path=DataContext.IsAdmin}" />
                                         </Grid>
 
                                         <Border

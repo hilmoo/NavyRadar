@@ -1,12 +1,12 @@
 ﻿using Backend.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Domain;
 using Shared.Models;
 
 namespace Backend.Controller;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 public class SailsController(ISailService sailService) : ControllerBase
 {
@@ -16,6 +16,15 @@ public class SailsController(ISailService sailService) : ControllerBase
     public async Task<IActionResult> GetAllSails()
     {
         var sails = await sailService.GetAllAsync();
+        return Ok(sails);
+    }
+
+    [HttpGet("active")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(IEnumerable<ActiveSailPosition>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllActiveSailPosition()
+    {
+        var sails = await sailService.GetAllActiveSailPositionAsync();
         return Ok(sails);
     }
 

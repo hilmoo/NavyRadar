@@ -14,7 +14,7 @@ public partial class MainMenuShipDialog
     {
         InitializeComponent();
 
-        TypeComboBox.ItemsSource = Enum.GetValues<ShipType>();
+        TypeComboBox.ItemsSource = ShipType.ShipTypes;
 
         if (ship == null)
         {
@@ -40,9 +40,9 @@ public partial class MainMenuShipDialog
         LengthTextBox.Text = ship.LengthOverall?.ToString() ?? string.Empty;
         GrossTonnageTextBox.Text = ship.GrossTonnage?.ToString() ?? string.Empty;
 
-        if (ship.Type != null && Enum.TryParse<ShipType>(ship.Type, out var shipType))
+        if (ship.Type != null)
         {
-            TypeComboBox.SelectedItem = shipType;
+            TypeComboBox.SelectedValue = ship.Type;
         }
         else
         {
@@ -87,7 +87,7 @@ public partial class MainMenuShipDialog
             Ship.ImoNumber = ImoNumberTextBox.Text.Trim();
             Ship.MmsiNumber =
                 string.IsNullOrWhiteSpace(MmsiNumberTextBox.Text) ? null : MmsiNumberTextBox.Text.Trim();
-            Ship.Type = TypeComboBox.SelectedValue?.ToString();
+            Ship.Type = TypeComboBox.SelectedValue as string;
             Ship.YearBuild = yearBuild;
             Ship.LengthOverall = length;
             Ship.GrossTonnage = tonnage;

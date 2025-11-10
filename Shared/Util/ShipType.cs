@@ -1,14 +1,17 @@
-namespace Shared.Util;
+﻿namespace Shared.Util;
 
-public enum ShipType
+public static class ShipType
 {
-    CargoVessels,
-    Tankers,
-    PassengerVessels,
-    HighSpeedCraft,
-    TugsSpecialCraft,
-    Fishing,
-    PleasureCraft,
-    NavigationAids,
-    UnspecifiedShips,
+    public static readonly string[] ShipTypes =
+    [
+        "Cargo Vessels",
+        "Tankers",
+        "Passenger Vessels",
+        "High Speed Craft",
+        "Tugs & Special Craft",
+        "Fishing",
+        "Pleasure Craft",
+        "Navigation Aids",
+        "Unspecified Ships"
+    ];
 }
