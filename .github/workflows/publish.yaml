@@ -1,0 +1,39 @@
+name: Build & Publish Windows EXEs
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    name: Build & Publish (win-x64)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Run build.cmd
+        shell: cmd
+        run: .\build.cmd
+
+      - name: Zip publish folder
+        shell: pwsh
+        run: Compress-Archive -Path .\publish\* -DestinationPath publish-${{ github.ref_name }}.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.tag_name }}
+          files: publish-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
