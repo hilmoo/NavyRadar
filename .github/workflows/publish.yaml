@@ -27,26 +27,19 @@ jobs:
 
       - name: Run build.cmd
         shell: cmd
-        run: .\build.cmd
+        run: .\scripts\build.cmd
 
-      - name: Create zip of publish folder
+      - name: Run release.ps1
         shell: pwsh
         env:
           TAG: ${{ inputs.tag_name }}
           REPO: ${{ github.repository }}
-        run: |
-          $repoSafe = $env:REPO
-          $zipName = "$repoSafe-$($env:TAG).zip"
-          Write-Host "Creating $zipName from ./publish/*"
-          $destination = Join-Path -Path $PWD -ChildPath $zipName
-          Compress-Archive -Path (Join-Path $PWD 'publish\*') -DestinationPath $destination -Force
-
-          Add-Content -Path $env:GITHUB_ENV -Value "ZIP_NAME=$zipName"
+        run: .\scripts\release.ps1
 
       - name: Create GitHub Release and upload artifact
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag_name  }}
-          files: ${{ env.ZIP_NAME }}
+          files: ${{ github.repository }}-${{ inputs.tag_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
