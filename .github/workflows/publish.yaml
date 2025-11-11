@@ -6,7 +6,7 @@ on:
       tag_name:
         required: true
         type: string
-        description: "The tag name to release"
+        description: "The tag name to release (e.g. 1.2.3 or v1.2.3)"
 
 permissions:
   contents: write
@@ -29,14 +29,32 @@ jobs:
         shell: cmd
         run: .\build.cmd
 
-      - name: Zip publish folder
+      - name: Verify publish folder exists
         shell: pwsh
-        run: Compress-Archive -Path .\publish\* -DestinationPath ${{ github.repository }}-${{ inputs.tag_name }}.zip
+        run: |
+          if (-not (Test-Path -Path ./publish -PathType Container)) {
+            Write-Error "Publish folder './publish' not found. Ensure build.cmd created ./publish via dotnet publish."
+            exit 1
+          }
 
-      - name: Create GitHub Release
+      - name: Create zip of publish folder
+        shell: pwsh
+        env:
+          TAG_RAW: ${{ inputs.tag_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          $tag = $env:TAG_RAW -replace '^[vV]*',''
+          $tag = "v$tag"
+          $zipName = "${env:REPO}-$($tag).zip"
+          Write-Host "Creating $zipName from ./publish/*"
+          Compress-Archive -Path .\publish\* -DestinationPath "$zipName"
+          echo "ZIP_NAME=$zipName" >> $env:GITHUB_ENV
+
+      - name: Create GitHub Release and upload artifact
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ inputs.tag_name }}
-          files: ${{ github.repository }}-${{ inputs.tag_name }}.zip
+          tag_name: ${{ env.ZIP_NAME && format('{0}', '' ) }}
+          files: ${{ env.ZIP_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ format('v{0}', replace(inputs.tag_name, '^[vV]*', '')) }}
