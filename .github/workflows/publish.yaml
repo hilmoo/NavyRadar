@@ -35,9 +35,12 @@ jobs:
           TAG: ${{ inputs.tag_name }}
           REPO: ${{ github.repository }}
         run: |
-          $zipName = "${env:REPO}-$($env:TAG).zip"
+          $repoSafe = $env:REPO
+          $zipName = "$repoSafe-$($env:TAG).zip"
           Write-Host "Creating $zipName from ./publish/*"
-          Compress-Archive -Path .\publish\* -DestinationPath "./$zipName"
+          $destination = Join-Path -Path $PWD -ChildPath $zipName
+          Compress-Archive -Path (Join-Path $PWD 'publish\*') -DestinationPath $destination -Force
+
           Add-Content -Path $env:GITHUB_ENV -Value "ZIP_NAME=$zipName"
 
       - name: Create GitHub Release and upload artifact

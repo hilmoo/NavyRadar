@@ -11,6 +11,7 @@ echo =================================
 echo Building MVC Backend...
 echo =================================
 dotnet publish NavyRadar.Backend -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true /p:DebugType=none -o ./publish/Backend
+COPY "NavyRadar.Backend\.env.example" "publish\Backend\.env.example"
 
 echo.
 echo =================================
