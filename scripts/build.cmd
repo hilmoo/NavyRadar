@@ -26,12 +26,3 @@ echo Build complete!
 echo =================================
 echo Your executables are located in the './publish' directory.
 echo.
-
-if "%REPO%"=="" (
-  echo ERROR: environment variable REPO is not set.
-  exit /b 1
-)
-if "%TAG%"=="" (
-  echo ERROR: environment variable TAG is not set.
-  exit /b 1
-)
