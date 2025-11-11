@@ -1,9 +1,12 @@
 name: Build & Publish Windows EXEs
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+        description: "The tag name to release"
 
 permissions:
   contents: write
@@ -28,12 +31,12 @@ jobs:
 
       - name: Zip publish folder
         shell: pwsh
-        run: Compress-Archive -Path .\publish\* -DestinationPath publish-${{ github.ref_name }}.zip
+        run: Compress-Archive -Path .\publish\* -DestinationPath ${{ github.repository }}-${{ inputs.tag_name }}.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ inputs.tag_name }}
-          files: publish-${{ github.ref_name }}.zip
+          files: ${{ github.repository }}-${{ inputs.tag_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
