@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Entities;
 
-namespace NavyRadar.Backend.libs;
+namespace NavyRadar.Backend.Helper;
 
 public class Jwt
 {
@@ -15,7 +15,7 @@ public class Jwt
         {
             [ClaimTypes.Name] = user.Username,
             [ClaimTypes.Email] = user.Email,
-            [ClaimTypes.Role] = user.Role,
+            [ClaimTypes.Role] = user.Role.ToString(),
             [ClaimTypes.Sid] = user.Id
         };
 

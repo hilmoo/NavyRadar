@@ -2,7 +2,7 @@
 
 namespace NavyRadar.Frontend.Views.Main;
 
-public partial class MainIndex : UserControl
+public partial class MainIndex
 {
     public MainIndex()
     {

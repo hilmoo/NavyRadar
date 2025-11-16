@@ -4,12 +4,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="clr-namespace:NavyRadar.Frontend.Util"
     xmlns:vm="clr-namespace:NavyRadar.Frontend.ViewModels"
     d:Background="White"
     d:DataContext="{d:DesignInstance Type=vm:HomeVm}"
     d:DesignHeight="1000"
     d:DesignWidth="300"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <util:EnumDescriptionConverter x:Key="EnumDescConverter" />
+    </UserControl.Resources>
+
     <Border
         BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
         BorderThickness="1"
@@ -217,7 +223,7 @@
                                 Grid.Row="3"
                                 Grid.Column="1"
                                 Style="{StaticResource Value}"
-                                Text="{Binding SelectedShip.Type, FallbackValue=N/A, TargetNullValue=N/A}" />
+                                Text="{Binding SelectedShip.Type, FallbackValue=N/A, TargetNullValue=N/A, Converter={StaticResource EnumDescConverter}}" />
 
                             <TextBlock
                                 Grid.Row="4"
@@ -287,23 +293,23 @@
                                 Grid.Row="3"
                                 Grid.Column="0"
                                 Style="{StaticResource Label}"
-                                Text="From Port ID:" />
+                                Text="From Port:" />
                             <TextBlock
                                 Grid.Row="3"
                                 Grid.Column="1"
                                 Style="{StaticResource Value}"
-                                Text="{Binding SelectedSail.OriginPortId, FallbackValue=N/A, TargetNullValue=N/A}" />
+                                Text="{Binding SelectedSail.OriginPortName, FallbackValue=N/A, TargetNullValue=N/A}" />
 
                             <TextBlock
                                 Grid.Row="4"
                                 Grid.Column="0"
                                 Style="{StaticResource Label}"
-                                Text="To Port ID:" />
+                                Text="To Port:" />
                             <TextBlock
                                 Grid.Row="4"
                                 Grid.Column="1"
                                 Style="{StaticResource Value}"
-                                Text="{Binding SelectedSail.DestinationPortId, FallbackValue=N/A, TargetNullValue=N/A}" />
+                                Text="{Binding SelectedSail.DestinationPortName, FallbackValue=N/A, TargetNullValue=N/A}" />
                         </Grid>
                     </StackPanel>
 

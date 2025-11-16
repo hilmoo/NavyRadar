@@ -1,9 +1,9 @@
-﻿using NavyRadar.Shared.Domain;
+﻿using NavyRadar.Shared.Domain.Auth;
 
 namespace NavyRadar.Backend.IService;
 
 public interface IAuthService
 {
-    Task<AccWithAuth?> RegisterAsync(RegisterDto registerDto);
-    Task<AccWithAuth?> SignInService(LoginDto loginDto);
+    Task<AccountWithAuth?> RegisterAsync(PayloadRegister payloadRegister);
+    Task<AccountWithAuth?> SignInService(PayloadLogin payloadLogin);
 }

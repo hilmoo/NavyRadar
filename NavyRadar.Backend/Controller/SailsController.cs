@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NavyRadar.Backend.IService;
-using NavyRadar.Shared.Domain;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Domain.Sail;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.Controller;
 
@@ -12,7 +12,7 @@ public class SailsController(ISailService sailService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(IEnumerable<Sail>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<SailWithName>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllSails()
     {
         var sails = await sailService.GetAllAsync();
@@ -29,7 +29,7 @@ public class SailsController(ISailService sailService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(Sail), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SailWithName), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetSailById(int id)
@@ -45,7 +45,7 @@ public class SailsController(ISailService sailService) : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(typeof(Sail), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(SailWithName), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -67,7 +67,7 @@ public class SailsController(ISailService sailService) : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(typeof(Sail), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SailWithName), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

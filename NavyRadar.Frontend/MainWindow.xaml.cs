@@ -47,8 +47,8 @@ public partial class MainWindow
                 _mClickScreenPoint = screenPt;
 
                 var marginOffset = RootGrid.Margin.Left;
-                var adjustedClickX = (_mClickPosition.X - marginOffset);
-                var adjustedWidth = (ActualWidth - (marginOffset * 2));
+                var adjustedClickX = _mClickPosition.X - marginOffset;
+                var adjustedWidth = ActualWidth - (marginOffset * 2);
                 _mClickPercentHorizontal = Math.Clamp(adjustedClickX / Math.Max(1.0, adjustedWidth), 0.0, 1.0);
             }
             else

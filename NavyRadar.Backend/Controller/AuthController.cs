@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NavyRadar.Backend.IService;
-using NavyRadar.Shared.Domain;
+using NavyRadar.Shared.Domain.Auth;
+
 namespace NavyRadar.Backend.Controller;
 
 [ApiController]
@@ -8,16 +9,16 @@ namespace NavyRadar.Backend.Controller;
 public class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]
-    [ProducesResponseType(typeof(AccWithAuth), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(AccountWithAuth), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] PayloadRegister payloadRegister)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var account = await authService.RegisterAsync(registerDto);
+        var account = await authService.RegisterAsync(payloadRegister);
 
         if (account == null)
         {
@@ -28,16 +29,16 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("signin")]
-    [ProducesResponseType(typeof(AccWithAuth), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AccountWithAuth), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    public async Task<IActionResult> Login([FromBody] PayloadLogin payloadLogin)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var account = await authService.SignInService(loginDto);
+        var account = await authService.SignInService(payloadLogin);
 
         if (account == null)
         {

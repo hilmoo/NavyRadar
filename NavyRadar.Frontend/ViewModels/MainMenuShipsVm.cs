@@ -1,30 +1,19 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows;
 using System.Windows.Input;
 using NavyRadar.Frontend.Util;
 using NavyRadar.Frontend.Views.Dialog;
-using NavyRadar.Shared.Spec;
+using NavyRadar.Shared.Entities;
+using ShipEntity = NavyRadar.Shared.Entities.Ship;
 
 namespace NavyRadar.Frontend.ViewModels;
 
-public class MainMenuShipsVm : ObservableObject
+public class MainMenuShipsVm : ViewModelBase
 {
-    public ObservableCollection<Ship> Ships { get; } = [];
+    public ObservableCollection<ShipEntity> Ships { get; } = [];
 
     [field: AllowNull, MaybeNull]
-    public Ship CurrentShip
-    {
-        get;
-        set
-        {
-            if (field == value) return;
-            field = value;
-            OnPropertyChanged();
-        }
-    }
-
-    private bool IsLoading
+    public ShipEntity CurrentShip
     {
         get;
         set
@@ -43,83 +32,52 @@ public class MainMenuShipsVm : ObservableObject
             field = value;
             OnPropertyChanged();
         }
-    } = false;
+    }
+
+    public event Func<string, string, bool>? ConfirmationRequested;
 
     public ICommand UpdateShipCommand { get; }
     public ICommand NewShipCommand { get; }
     public ICommand RefreshCommand { get; }
+    public ICommand RemoveShipCommand { get; }
 
     public MainMenuShipsVm()
     {
-        UpdateShipCommand = new SimpleRelayCommand(async void () =>
-            {
-                try
-                {
-                    await OnUpdateShipAsync();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-                }
-            },
+        UpdateShipCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnUpdateShipAsync),
             () => !IsLoading);
-        NewShipCommand = new SimpleRelayCommand(async void () =>
-        {
-            try
-            {
-                await OnNewShipAsync();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-            }
-        }, () => !IsLoading);
-        RefreshCommand = new SimpleRelayCommand(async void () =>
-        {
-            try
-            {
-                await LoadShipsAsync();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-            }
-        }, () => !IsLoading);
 
-        _ = LoadShipsAsync();
+        NewShipCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnNewShipAsync),
+            () => !IsLoading);
+
+        RefreshCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(LoadShipsAsync),
+            () => !IsLoading);
+
+        RemoveShipCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnRemoveShipAsync),
+            () => !IsLoading);
+
+        _ = ExecuteLoadingTask(LoadShipsAsync);
     }
 
     private async Task LoadShipsAsync()
     {
-        IsLoading = true;
         Ships.Clear();
 
-        try
+        var shipsFromServer = await ApiService.ApiClient.ShipAllAsync();
+        foreach (var ship in shipsFromServer)
         {
-            var shipsFromServer = await ApiService.ApiClient.ShipAllAsync();
-            foreach (var ship in shipsFromServer)
-            {
-                Ships.Add(ship);
-            }
+            Ships.Add(ship.ToEntity());
         }
-        catch (ApiException apiEx)
-        {
-            MessageBox.Show($"Could not load ships. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                "API Error");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+
+        CurrentShip = Ships.FirstOrDefault()!;
     }
 
     private async Task OnUpdateShipAsync()
     {
-        var shipToEdit = new Ship
+        var shipToEdit = new ShipEntity
         {
             Id = CurrentShip.Id,
             Name = CurrentShip.Name,
@@ -131,96 +89,70 @@ public class MainMenuShipsVm : ObservableObject
             GrossTonnage = CurrentShip.GrossTonnage
         };
 
-        var dialog = new MainMenuShipDialog(MapSpecToModel(shipToEdit));
+        var dialog = new MainMenuShipDialog(shipToEdit);
 
         if (dialog.ShowDialog() == true)
         {
-            IsLoading = true;
-            try
+            if (dialog.Ship != null)
             {
-                if (dialog.Ship != null)
-                {
-                    var updatedShip =
-                        await ApiService.ApiClient.ShipPUTAsync(dialog.Ship.Id, MapModelToSpec(dialog.Ship));
+                var updatedShip =
+                    await ApiService.ApiClient.ShipPUTAsync(dialog.Ship.Id, dialog.Ship.ToDto());
 
-                    var index = Ships.IndexOf(CurrentShip);
+                var updatedShipEntity = updatedShip.ToEntity();
+                var originalShipInList = Ships.FirstOrDefault(s => s.Id == updatedShipEntity.Id);
+
+                if (originalShipInList != null)
+                {
+                    var index = Ships.IndexOf(originalShipInList);
+
                     if (index != -1)
                     {
-                        Ships[index] = updatedShip;
+                        Ships[index] = updatedShipEntity;
+                        CurrentShip = updatedShipEntity;
                     }
                 }
-            }
-            catch (ApiException apiEx)
-            {
-                MessageBox.Show($"Could not update ship. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                    "API Error");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
     }
 
     private async Task OnNewShipAsync()
     {
-        var dialog = new MainMenuShipDialog(MapSpecToModel(new Ship()));
-
+        var dialog = new MainMenuShipDialog(new ShipEntity
+        {
+            Name = "",
+            ImoNumber = "",
+            MmsiNumber = "",
+            Type = ShipType.UnspecifiedShips,
+            YearBuild = 0,
+            LengthOverall = 0,
+            GrossTonnage = 0
+        });
         if (dialog.ShowDialog() == true)
         {
-            IsLoading = true;
-            try
+            if (dialog.Ship != null)
             {
-                if (dialog.Ship != null)
-                {
-                    var newShip = await ApiService.ApiClient.ShipPOSTAsync(MapModelToSpec(dialog.Ship));
-
-                    Ships.Add(newShip);
-                }
-            }
-            catch (ApiException apiEx)
-            {
-                MessageBox.Show($"Could not create ship. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                    "API Error");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-            }
-            finally
-            {
-                IsLoading = false;
+                var newShip = await ApiService.ApiClient.ShipPOSTAsync(dialog.Ship.ToDto());
+                Ships.Add(newShip.ToEntity());
+                CurrentShip = newShip.ToEntity();
             }
         }
     }
 
-    private static Shared.Models.Ship MapSpecToModel(Ship spec) =>
-        new()
-        {
-            Id = spec.Id,
-            Name = spec.Name,
-            ImoNumber = spec.ImoNumber,
-            MmsiNumber = spec.MmsiNumber,
-            Type = spec.Type,
-            YearBuild = spec.YearBuild,
-            LengthOverall = spec.LengthOverall,
-            GrossTonnage = spec.GrossTonnage
-        };
+    private async Task OnRemoveShipAsync()
+    {
+        var confirmed = ConfirmationRequested?.Invoke(
+            "Confirm Removal",
+            $"Are you sure you want to remove {CurrentShip.Name}?") ?? false;
 
-    private static Ship MapModelToSpec(Shared.Models.Ship model) =>
-        new()
-        {
-            Id = model.Id,
-            Name = model.Name,
-            ImoNumber = model.ImoNumber,
-            MmsiNumber = model.MmsiNumber,
-            Type = model.Type,
-            YearBuild = model.YearBuild,
-            LengthOverall = model.LengthOverall,
-            GrossTonnage = model.GrossTonnage
-        };
+        if (!confirmed) return;
+
+        var shipToRemove = CurrentShip;
+        var index = Ships.IndexOf(shipToRemove);
+
+        await ApiService.ApiClient.ShipDELETEAsync(shipToRemove.Id);
+
+        Ships.Remove(shipToRemove);
+
+        CurrentShip = (Ships.Any() ? Ships[Math.Max(0, index - 1)] : null)!;
+    }
 }

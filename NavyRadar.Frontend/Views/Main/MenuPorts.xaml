@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:entities="clr-namespace:NavyRadar.Shared.Entities;assembly=NavyRadar.Shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:NavyRadar.Shared.Models;assembly=NavyRadar.Shared"
     xmlns:vm="clr-namespace:NavyRadar.Frontend.ViewModels"
     x:Name="RootMenuPorts"
     d:DataContext="{d:DesignInstance Type=vm:MainMenuPortsVm}"
@@ -53,7 +53,8 @@
                 d:DataContext="{d:DesignInstance Type=vm:MainMenuPortsVm}"
                 Command="{Binding NewPortCommand}"
                 Content="New Port"
-                IsEnabled="{Binding IsAdmin}" />
+                IsEnabled="{Binding IsAdmin}"
+                Style="{StaticResource CollapseWhenDisabledButton}" />
         </Grid>
 
         <GridSplitter
@@ -71,12 +72,13 @@
                 <Style TargetType="ContentControl">
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
-                            <DataTemplate DataType="models:Port">
+                            <DataTemplate DataType="entities:Port">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <StackPanel Margin="10">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock
@@ -91,7 +93,17 @@
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuPorts, Path=DataContext.UpdatePortCommand}"
                                                 Content="Update Port"
-                                                IsEnabled="{Binding ElementName=RootMenuPorts, Path=DataContext.IsAdmin}" />
+                                                IsEnabled="{Binding ElementName=RootMenuPorts, Path=DataContext.IsAdmin}"
+                                                Style="{StaticResource CollapseWhenDisabledButton}" />
+                                            <Button
+                                                Grid.Column="2"
+                                                Width="150"
+                                                Margin="0,0,20,20"
+                                                HorizontalAlignment="Center"
+                                                Command="{Binding ElementName=RootMenuPorts, Path=DataContext.RemovePortCommand}"
+                                                Content="Remove Port"
+                                                IsEnabled="{Binding ElementName=RootMenuPorts, Path=DataContext.IsAdmin}"
+                                                Style="{StaticResource CollapseWhenDisabledButton}" />
                                         </Grid>
 
                                         <Border

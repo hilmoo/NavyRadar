@@ -1,6 +1,7 @@
 ﻿using System.Windows;
-using NavyRadar.Shared.Models;
-using NavyRadar.Shared.Util;
+using System.Windows.Controls;
+using NavyRadar.Shared;
+using NavyRadar.Shared.Entities;
 
 
 namespace NavyRadar.Frontend.Views.Dialog;
@@ -14,7 +15,9 @@ public partial class MainMenuShipDialog
     {
         InitializeComponent();
 
-        TypeComboBox.ItemsSource = ShipType.ShipTypes;
+        TypeComboBox.ItemsSource = Enum.GetValues<ShipType>()
+            .Select(st => new KeyValuePair<ShipType, string>(st, st.GetDescription()))
+            .ToList();
 
         if (ship == null)
         {
@@ -34,60 +37,80 @@ public partial class MainMenuShipDialog
     private void PopulateFields(Ship ship)
     {
         ImoNumberTextBox.Text = ship.ImoNumber;
-        MmsiNumberTextBox.Text = ship.MmsiNumber ?? string.Empty;
+        MmsiNumberTextBox.Text = ship.MmsiNumber;
         NameTextBox.Text = ship.Name;
-        YearBuildTextBox.Text = ship.YearBuild?.ToString() ?? string.Empty;
-        LengthTextBox.Text = ship.LengthOverall?.ToString() ?? string.Empty;
-        GrossTonnageTextBox.Text = ship.GrossTonnage?.ToString() ?? string.Empty;
-
-        if (ship.Type != null)
-        {
-            TypeComboBox.SelectedValue = ship.Type;
-        }
-        else
-        {
-            TypeComboBox.SelectedIndex = -1;
-        }
+        YearBuildTextBox.Text = ship.YearBuild.ToString();
+        LengthTextBox.Text = ship.LengthOverall.ToString();
+        GrossTonnageTextBox.Text = ship.GrossTonnage.ToString();
+        TypeComboBox.SelectedValue = ship.Type;
     }
 
     private void OkButton_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(NameTextBox.Text))
+        if (string.IsNullOrWhiteSpace(NameTextBox.Text) ||
+            string.IsNullOrWhiteSpace(ImoNumberTextBox.Text) ||
+            string.IsNullOrWhiteSpace(MmsiNumberTextBox.Text) ||
+            TypeComboBox.SelectedValue == null)
         {
-            MessageBox.Show("'Name' is a required field.", "Validation Error", MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            NameTextBox.Focus();
+            if (string.IsNullOrWhiteSpace(NameTextBox.Text))
+            {
+                ShowValidationError("'Name' is a required field.", NameTextBox);
+            }
+            else if (string.IsNullOrWhiteSpace(ImoNumberTextBox.Text))
+            {
+                ShowValidationError("'IMO Number' is a required field.", ImoNumberTextBox);
+            }
+            else if (string.IsNullOrWhiteSpace(MmsiNumberTextBox.Text))
+            {
+                ShowValidationError("'MMSI Number' is a required field.", MmsiNumberTextBox);
+            }
+            else
+            {
+                ShowValidationError("'Type' is a required field.", TypeComboBox);
+            }
+
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(ImoNumberTextBox.Text))
+        if (!int.TryParse(YearBuildTextBox.Text, out var yearBuild) || yearBuild <= 1800)
         {
-            MessageBox.Show("'IMO Number' is a required field.", "Validation Error", MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            ImoNumberTextBox.Focus();
+            ShowValidationError("'Year Build' must be a valid, realistic year (e.g., after 1800).", YearBuildTextBox);
             return;
         }
 
-        int? yearBuild = int.TryParse(YearBuildTextBox.Text, out var year) ? year : null;
-        int? length = int.TryParse(LengthTextBox.Text, out var len) ? len : null;
-        int? tonnage = int.TryParse(GrossTonnageTextBox.Text, out var ton) ? ton : null;
+        if (!int.TryParse(LengthTextBox.Text, out var length) || length <= 0)
+        {
+            ShowValidationError("'Length Overall' must be a valid, positive number.", LengthTextBox);
+            return;
+        }
+
+        if (!int.TryParse(GrossTonnageTextBox.Text, out var tonnage) || tonnage <= 0)
+        {
+            ShowValidationError("'Gross Tonnage' must be a valid, positive number.", GrossTonnageTextBox);
+            return;
+        }
+
+        var shipType = (ShipType)TypeComboBox.SelectedValue;
 
         if (!_isUpdateMode)
         {
             Ship = new Ship
             {
                 Name = NameTextBox.Text.Trim(),
-                ImoNumber = ImoNumberTextBox.Text.Trim()
+                ImoNumber = ImoNumberTextBox.Text.Trim(),
+                MmsiNumber = MmsiNumberTextBox.Text.Trim(),
+                Type = shipType,
+                YearBuild = yearBuild,
+                LengthOverall = length,
+                GrossTonnage = tonnage
             };
         }
-
-        if (Ship != null)
+        else if (Ship != null)
         {
             Ship.Name = NameTextBox.Text.Trim();
             Ship.ImoNumber = ImoNumberTextBox.Text.Trim();
-            Ship.MmsiNumber =
-                string.IsNullOrWhiteSpace(MmsiNumberTextBox.Text) ? null : MmsiNumberTextBox.Text.Trim();
-            Ship.Type = TypeComboBox.SelectedValue as string;
+            Ship.MmsiNumber = MmsiNumberTextBox.Text.Trim();
+            Ship.Type = shipType;
             Ship.YearBuild = yearBuild;
             Ship.LengthOverall = length;
             Ship.GrossTonnage = tonnage;
@@ -99,5 +122,11 @@ public partial class MainMenuShipDialog
     private void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         DialogResult = false;
+    }
+
+    private static void ShowValidationError(string message, Control controlToFocus)
+    {
+        MessageBox.Show(message, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        controlToFocus.Focus();
     }
 }

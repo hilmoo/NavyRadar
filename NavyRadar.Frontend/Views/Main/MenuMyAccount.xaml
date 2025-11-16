@@ -114,15 +114,6 @@
             Content="Update Profile" />
 
         <Button
-            Grid.Row="3"
-            Width="150"
-            Margin="0,0,20,20"
-            HorizontalAlignment="Center"
-            d:DataContext="{d:DesignInstance Type=vm:MainMenuMyAccountVm}"
-            Command="{Binding BackToHomeCommand}"
-            Content="Back To Home" />
-
-        <Button
             Grid.Row="4"
             Width="150"
             Margin="0,0,20,20"

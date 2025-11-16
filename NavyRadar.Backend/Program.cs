@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using NavyRadar.Shared.Entities;
 using Npgsql;
 
 DotNetEnv.Env.Load();
@@ -20,9 +21,11 @@ if (string.IsNullOrEmpty(jwtSecret))
         "JWT secret not found. Set 'JWT_SECRET' environment variable");
 }
 
-const string issuer = "NavyRadar";
-const string audience = "NavyRadarUsers";
-var key = Encoding.UTF8.GetBytes(jwtSecret);
+if (Encoding.UTF8.GetByteCount(jwtSecret) < 16)
+{
+    throw new InvalidOperationException(
+        "JWT secret is too short. It must be at least 16 bytes long");
+}
 
 builder.Services.AddAuthentication(options =>
     {
@@ -36,13 +39,13 @@ builder.Services.AddAuthentication(options =>
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
 
             ValidateIssuer = true,
-            ValidIssuer = issuer,
+            ValidIssuer = "NavyRadar",
 
             ValidateAudience = true,
-            ValidAudience = audience,
+            ValidAudience = "NavyRadarUsers",
 
             ValidateLifetime = true
         };
@@ -55,7 +58,13 @@ if (string.IsNullOrEmpty(connectionString))
         "Database connection string not found. Set 'POSTGRES_CONN' environment variable");
 }
 
-builder.Services.AddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<AccountRole>("account_role");
+dataSourceBuilder.MapEnum<SailStatus>("sail_status");
+dataSourceBuilder.MapEnum<ShipType>("ship_type");
+await using var dataSource = dataSourceBuilder.Build();
+
+builder.Services.AddSingleton(dataSource);
 
 // --- Service Registration ---
 builder.Services.AddScoped<IShipService, ShipService>();
@@ -65,6 +74,7 @@ builder.Services.AddScoped<IPortService, PortService>();
 builder.Services.AddScoped<IPositionHistoryService, PositionHistoryService>();
 builder.Services.AddScoped<ISailService, SailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISailingService, SailingService>();
 
 // --- Core ASP.NET Services ---
 builder.Services.AddControllers();

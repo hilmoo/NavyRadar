@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using NavyRadar.Backend.IService;
+using NavyRadar.Shared.Entities;
 using Npgsql;
-using NavyRadar.Shared.Models;
 
 namespace NavyRadar.Backend.Service;
 

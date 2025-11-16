@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using NavyRadar.Frontend.Util;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Frontend.ViewModels;
 
@@ -19,36 +19,56 @@ public class MainVm : ViewModelBase
             OnPropertyChanged(nameof(IsAccountsViewSelected));
             OnPropertyChanged(nameof(IsPortsViewSelected));
             OnPropertyChanged(nameof(IsMyAccountViewSelected));
+            OnPropertyChanged(nameof(IsSailsViewSelected));
+            OnPropertyChanged(nameof(IsCaptainViewSelected));
         }
     }
 
+    public ICommand BackToHomeCommand { get; }
     public ICommand ShipsCommand { get; }
     public ICommand AccountsCommand { get; }
     public ICommand PortsCommand { get; }
     public ICommand MyAccountCommand { get; }
+    public ICommand SailsCommand { get; }
+    public ICommand CaptainCommand { get; }
 
     private void Ships(object? obj) =>
-        CurrentView = new MainMenuShipsVm { IsAdmin = _navigationVm.CurrentAccount!.Role == "Admin" };
+        CurrentView = new MainMenuShipsVm { IsAdmin = IsAdmin };
 
-    private void Accounts(object? obj) => CurrentView = new MainMenuAccountsVm
-        { IsAdmin = _navigationVm.CurrentAccount!.Role == "Admin" };
+    private void Accounts(object? obj) => CurrentView = new MainMenuAccountsVm();
 
     private void Ports(object? obj) =>
-        CurrentView = new MainMenuPortsVm { IsAdmin = _navigationVm.CurrentAccount!.Role == "Admin" };
+        CurrentView = new MainMenuPortsVm { IsAdmin = IsAdmin };
 
     private void MyAccount(object? obj) =>
         CurrentView = new MainMenuMyAccountVm
         {
-            CurrentAccount = MapModelToSpec(_navigationVm.CurrentAccount!),
+            CurrentAccount = _navigationVm.CurrentAccount!,
             NavigationVm = _navigationVm,
             OnSignOut = HandleSignOut
+        };
+
+    private void Sails(object? obj) =>
+        CurrentView = new MainMenuSailsVm
+        {
+            IsAdmin = IsAdmin
+        };
+
+    private void Captain(object? obj) =>
+        CurrentView = new MainMenuSailingVm
+        {
+            CurrentAccount = _navigationVm.CurrentAccount!
         };
 
     public bool IsShipsViewSelected => CurrentView is MainMenuShipsVm;
     public bool IsAccountsViewSelected => CurrentView is MainMenuAccountsVm;
     public bool IsPortsViewSelected => CurrentView is MainMenuPortsVm;
     public bool IsMyAccountViewSelected => CurrentView is MainMenuMyAccountVm;
-    public bool IsAdmin => _navigationVm.CurrentAccount?.Role == "Admin";
+    public bool IsSailsViewSelected => CurrentView is MainMenuSailsVm;
+    public bool IsCaptainViewSelected => CurrentView is MainMenuSailingVm;
+    public bool IsAdmin => _navigationVm.CurrentAccount!.Role == AccountRole.Admin;
+    public bool IsCaptain => _navigationVm.CurrentAccount!.Role == AccountRole.Captain;
+    public bool IsNotCaptain => !IsCaptain;
 
     public MainVm(NavigationVm navigationVm)
     {
@@ -57,11 +77,21 @@ public class MainVm : ViewModelBase
         AccountsCommand = new RelayCommand(Accounts);
         PortsCommand = new RelayCommand(Ports);
         MyAccountCommand = new RelayCommand(MyAccount);
+        SailsCommand = new RelayCommand(Sails);
+        BackToHomeCommand = new RelayCommand(BackToHome);
+        CaptainCommand = new RelayCommand(Captain);
 
-        CurrentView = new MainMenuShipsVm
+        if (IsNotCaptain)
         {
-            IsAdmin = _navigationVm.CurrentAccount!.Role == "Admin"
-        };
+            CurrentView = new MainMenuShipsVm
+            {
+                IsAdmin = IsAdmin
+            };
+        }
+        else
+        {
+            CurrentView = new MainMenuSailingVm();
+        }
     }
 
     private void HandleSignOut()
@@ -70,13 +100,8 @@ public class MainVm : ViewModelBase
         _navigationVm.SignOut();
     }
 
-    private static Shared.Spec.Account MapModelToSpec(Account model) =>
-        new()
-        {
-            Id = model.Id,
-            Username = model.Username,
-            Email = model.Email,
-            Password = model.Password,
-            Role = model.Role
-        };
+    private void BackToHome(object? obj)
+    {
+        _navigationVm.NavigateToHome();
+    }
 }

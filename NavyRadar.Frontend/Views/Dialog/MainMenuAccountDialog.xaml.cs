@@ -1,6 +1,5 @@
 ﻿using System.Windows;
-using NavyRadar.Shared.Util;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Frontend.Views.Dialog;
 
@@ -13,13 +12,17 @@ public partial class MainMenuAccountDialog
     {
         InitializeComponent();
 
-        RoleComboBox.ItemsSource = Enum.GetValues<RoleType>();
 
         if (account == null)
         {
             Title = "Add New User";
             Account = null;
             _isUpdateMode = false;
+            RoleComboBox.ItemsSource = new List<AccountRole>
+            {
+                AccountRole.User,
+                AccountRole.Admin
+            };
         }
         else
         {
@@ -27,6 +30,12 @@ public partial class MainMenuAccountDialog
             Account = account;
             _isUpdateMode = true;
             PopulateFields(account);
+            RoleComboBox.ItemsSource = new List<AccountRole>
+            {
+                AccountRole.User,
+                AccountRole.Admin,
+                AccountRole.Captain
+            };
         }
     }
 
@@ -35,14 +44,11 @@ public partial class MainMenuAccountDialog
         UsernameTextBox.Text = account.Username;
         PasswordTextBox.Password = "";
         EmailTextBox.Text = account.Email;
+        RoleComboBox.SelectedItem = account.Role;
 
-        if (Enum.TryParse<RoleType>(account.Role, out var accountRole))
+        if (account.Role == AccountRole.Captain)
         {
-            RoleComboBox.SelectedItem = accountRole;
-        }
-        else
-        {
-            RoleComboBox.SelectedIndex = -1;
+            RoleComboBox.IsEnabled = false;
         }
     }
 
@@ -72,7 +78,7 @@ public partial class MainMenuAccountDialog
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(RoleComboBox.Text))
+        if (string.IsNullOrWhiteSpace(RoleComboBox.Text) || RoleComboBox.SelectedItem == null)
         {
             MessageBox.Show("'Role' is a required field.", "Validation Error", MessageBoxButton.OK,
                 MessageBoxImage.Error);
@@ -83,7 +89,7 @@ public partial class MainMenuAccountDialog
         var username = UsernameTextBox.Text.Trim();
         var password = PasswordTextBox.Password.Trim();
         var email = EmailTextBox.Text.Trim();
-        var role = RoleComboBox.Text.Trim();
+        var role = (AccountRole)RoleComboBox.SelectedItem;
 
         if (_isUpdateMode)
         {

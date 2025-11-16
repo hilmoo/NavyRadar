@@ -3,24 +3,27 @@ using System.Text.Json.Nodes;
 using System.Windows;
 using System.Windows.Input;
 using NavyRadar.Frontend.Util;
+using NavyRadar.Shared.Domain.Sail;
+using NavyRadar.Shared.Entities;
+using Port = NavyRadar.Shared.Spec.Port;
 
 namespace NavyRadar.Frontend.ViewModels;
 
 public class HomeVm : ViewModelBase
 {
-    public Shared.Spec.Port? SelectedPort
+    public Port? SelectedPort
     {
         get;
         set => SetProperty(ref field, value);
     }
 
-    public Shared.Spec.Ship? SelectedShip
+    public Ship? SelectedShip
     {
         get;
         set => SetProperty(ref field, value);
     }
 
-    public Shared.Spec.Sail? SelectedSail
+    public SailWithName? SelectedSail
     {
         get;
         set => SetProperty(ref field, value);
@@ -107,15 +110,15 @@ public class HomeVm : ViewModelBase
     {
         var shipTypes = new JsonObject
         {
-            ["cargoVessels"] = IsCargoVesselsChecked,
-            ["tankers"] = IsTankersChecked,
-            ["passengerVessels"] = IsPassengerVesselsChecked,
-            ["highSpeedCraft"] = IsHighSpeedCraftChecked,
-            ["tugsAndSpecialCraft"] = IsTugsAndSpecialCraftChecked,
-            ["fishing"] = IsFishingChecked,
-            ["pleasureCraft"] = IsPleasureCraftChecked,
-            ["navigationAids"] = IsNavigationAidsChecked,
-            ["unspecifiedShips"] = IsUnspecifiedShipsChecked
+            ["CargoVessels"] = IsCargoVesselsChecked,
+            ["Tankers"] = IsTankersChecked,
+            ["PassengerVessels"] = IsPassengerVesselsChecked,
+            ["HighSpeedCraft"] = IsHighSpeedCraftChecked,
+            ["TugsAndSpecialCraft"] = IsTugsAndSpecialCraftChecked,
+            ["Fishing"] = IsFishingChecked,
+            ["LeasureCraft"] = IsPleasureCraftChecked,
+            ["NavigationAids"] = IsNavigationAidsChecked,
+            ["UnspecifiedShips"] = IsUnspecifiedShipsChecked
         };
 
         var message = new JsonObject
@@ -156,8 +159,10 @@ public class HomeVm : ViewModelBase
                         var shipId = messageNode["shipId"]?.GetValue<int>();
                         var sailId = messageNode["sailId"]?.GetValue<int>();
                         if (shipId == null || sailId == null) return;
-                        SelectedShip = await ApiService.ApiClient.ShipGETAsync(shipId.Value);
-                        SelectedSail = await ApiService.ApiClient.SailsGETAsync(sailId.Value);
+                        var selectedShip = await ApiService.ApiClient.ShipGETAsync(shipId.Value);
+                        SelectedShip = selectedShip.ToEntity();
+                        var selectedSail = await ApiService.ApiClient.SailsGETAsync(sailId.Value);
+                        SelectedSail = selectedSail.ToEntity();
                         Debug.WriteLine($"SHIP SELECTED -> ShipID: {SelectedShip.Id}, SailID: {SelectedSail.Id}");
                         break;
 

@@ -4,13 +4,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:NavyRadar.Shared.Models;assembly=NavyRadar.Shared"
+    xmlns:models="clr-namespace:NavyRadar.Shared.Entities;assembly=NavyRadar.Shared"
+    xmlns:util="clr-namespace:NavyRadar.Frontend.Util"
     xmlns:vm="clr-namespace:NavyRadar.Frontend.ViewModels"
     x:Name="RootMenuShips"
     d:DataContext="{d:DesignInstance Type=vm:MainMenuShipsVm}"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <util:EnumDescriptionConverter x:Key="EnumDescConverter" />
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250" MinWidth="150" />
@@ -52,7 +58,8 @@
                 d:DataContext="{d:DesignInstance Type=vm:MainMenuShipsVm}"
                 Command="{Binding NewShipCommand}"
                 Content="New Ship"
-                IsEnabled="{Binding IsAdmin}" />
+                IsEnabled="{Binding IsAdmin}"
+                Style="{StaticResource CollapseWhenDisabledButton}" />
         </Grid>
 
         <GridSplitter
@@ -77,6 +84,7 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock
                                                 Margin="0,0,0,20"
@@ -90,7 +98,17 @@
                                                 HorizontalAlignment="Center"
                                                 Command="{Binding ElementName=RootMenuShips, Path=DataContext.UpdateShipCommand}"
                                                 Content="Update Ship"
-                                                IsEnabled="{Binding ElementName=RootMenuShips, Path=DataContext.IsAdmin}" />
+                                                IsEnabled="{Binding ElementName=RootMenuShips, Path=DataContext.IsAdmin}"
+                                                Style="{StaticResource CollapseWhenDisabledButton}" />
+                                            <Button
+                                                Grid.Column="2"
+                                                Width="150"
+                                                Margin="0,0,20,20"
+                                                HorizontalAlignment="Center"
+                                                Command="{Binding ElementName=RootMenuShips, Path=DataContext.RemoveShipCommand}"
+                                                Content="Remove Ship"
+                                                IsEnabled="{Binding ElementName=RootMenuShips, Path=DataContext.IsAdmin}"
+                                                Style="{StaticResource CollapseWhenDisabledButton}" />
                                         </Grid>
 
                                         <Border
@@ -123,7 +141,6 @@
                                                     <ColumnDefinition Width="120" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
-
                                                 <TextBlock
                                                     Grid.Row="0"
                                                     Grid.Column="0"
@@ -184,7 +201,7 @@
                                                     Grid.Row="4"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,10"
-                                                    Text="{Binding Type}" />
+                                                    Text="{Binding Type, Converter={StaticResource EnumDescConverter}}" />
 
                                                 <TextBlock
                                                     Grid.Row="5"
@@ -228,6 +245,7 @@
                         </Setter.Value>
                     </Setter>
 
+
                     <Style.Triggers>
                         <Trigger Property="Content" Value="{x:Null}">
                             <Setter Property="ContentTemplate">
@@ -241,6 +259,7 @@
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
+
                         </Trigger>
                     </Style.Triggers>
                 </Style>

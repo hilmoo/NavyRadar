@@ -3,8 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NavyRadar.Backend.IService;
-using NavyRadar.Shared.Domain;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Domain.Account;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.Controller;
 
@@ -69,7 +69,7 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAcc account)
+    public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccount account)
     {
         if (id != account.Id)
         {
@@ -89,7 +89,7 @@ public class AccountsController(IAccountService accountService) : ControllerBase
 
         return Ok(updatedAccount);
     }
-    
+
     [HttpPut("profile")]
     [Authorize]
     [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
@@ -97,7 +97,7 @@ public class AccountsController(IAccountService accountService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateAcc account)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateAccount account)
     {
         if (!ModelState.IsValid)
         {

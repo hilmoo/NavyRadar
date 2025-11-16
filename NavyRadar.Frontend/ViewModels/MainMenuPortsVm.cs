@@ -1,17 +1,17 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 using NavyRadar.Frontend.Util;
 using NavyRadar.Frontend.Views.Dialog;
-using NavyRadar.Shared.Spec;
+using NavyRadar.Shared.Entities;
+using PortEntity = NavyRadar.Shared.Entities.Port;
 
 namespace NavyRadar.Frontend.ViewModels;
 
-public class MainMenuPortsVm : ObservableObject
+public class MainMenuPortsVm : ViewModelBase
 {
-    public ObservableCollection<Port> Ports { get; } = [];
+    public ObservableCollection<PortEntity> Ports { get; } = [];
 
-    public Port CurrentPort
+    public PortEntity CurrentPort
     {
         get;
         set
@@ -22,17 +22,6 @@ public class MainMenuPortsVm : ObservableObject
         }
     } = null!;
 
-    private bool IsLoading
-    {
-        get;
-        set
-        {
-            if (field == value) return;
-            field = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsAdmin
     {
         get;
@@ -41,176 +30,116 @@ public class MainMenuPortsVm : ObservableObject
             field = value;
             OnPropertyChanged();
         }
-    } = false;
+    }
 
+    public event Func<string, string, bool>? ConfirmationRequested;
 
     public ICommand UpdatePortCommand { get; }
     public ICommand NewPortCommand { get; }
     public ICommand RefreshCommand { get; }
+    public ICommand RemovePortCommand { get; }
 
     public MainMenuPortsVm()
     {
-        UpdatePortCommand = new SimpleRelayCommand(async void () =>
-            {
-                try
-                {
-                    await OnUpdatePortAsync();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-                }
-            },
+        UpdatePortCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnUpdatePortAsync),
             () => !IsLoading);
-        NewPortCommand = new SimpleRelayCommand(async void () =>
-        {
-            try
-            {
-                await OnNewPortAsync();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-            }
-        }, () => !IsLoading);
-        RefreshCommand = new SimpleRelayCommand(async void () =>
-        {
-            try
-            {
-                await LoadPortsAsync();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-            }
-        }, () => !IsLoading);
 
-        _ = LoadPortsAsync();
+        NewPortCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnNewPortAsync),
+            () => !IsLoading);
+
+        RefreshCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(LoadPortsAsync),
+            () => !IsLoading);
+
+        RemovePortCommand = new SimpleRelayCommand(
+            () => _ = ExecuteLoadingTask(OnRemovePortAsync),
+            () => !IsLoading);
+
+        _ = ExecuteLoadingTask(LoadPortsAsync);
     }
 
 
     private async Task LoadPortsAsync()
     {
-        IsLoading = true;
         Ports.Clear();
 
-        try
+        var portsFromServer = await ApiService.ApiClient.PortsAllAsync();
+        foreach (var port in portsFromServer)
         {
-            var portsFromServer = await ApiService.ApiClient.PortsAllAsync();
-            foreach (var port in portsFromServer)
-            {
-                Ports.Add(port);
-            }
+            Ports.Add(port.ToEntity());
         }
-        catch (ApiException apiEx)
-        {
-            MessageBox.Show($"Could not load ports. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                "API Error");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+
+        CurrentPort = Ports.FirstOrDefault()!;
     }
 
     private async Task OnUpdatePortAsync()
     {
-        var portToEdit = new Port
+        var portToEdit = new PortEntity
         {
             Id = CurrentPort.Id,
             Name = CurrentPort.Name,
             CountryCode = CurrentPort.CountryCode,
-            Location = new NpgsqlPoint { X = CurrentPort.Location.X, Y = CurrentPort.Location.Y }
+            Location = new NpgsqlTypes.NpgsqlPoint { X = CurrentPort.Location.X, Y = CurrentPort.Location.Y }
         };
 
-        var dialog = new MainMenuPortDialog(MapSpecToModel(portToEdit));
+        var dialog = new MainMenuPortDialog(portToEdit);
 
         if (dialog.ShowDialog() == true)
         {
-            IsLoading = true;
-            try
+            if (dialog.Port != null)
             {
-                if (dialog.Port != null)
-                {
-                    var updatedPort =
-                        await ApiService.ApiClient.PortsPUTAsync(dialog.Port.Id, MapModelToSpec(dialog.Port));
+                var updatedPort =
+                    await ApiService.ApiClient.PortsPUTAsync(dialog.Port.Id, dialog.Port.ToDto());
 
-                    var index = Ports.IndexOf(CurrentPort);
+                var originalPortInList = Ports.FirstOrDefault(s => s.Id == updatedPort.Id);
+                var updatedPortEntity = updatedPort.ToEntity();
+
+                if (originalPortInList != null)
+                {
+                    var index = Ports.IndexOf(originalPortInList);
+
                     if (index != -1)
                     {
-                        Ports[index] = updatedPort;
+                        Ports[index] = updatedPortEntity;
+                        CurrentPort = updatedPortEntity;
                     }
                 }
-            }
-            catch (ApiException apiEx)
-            {
-                MessageBox.Show(
-                    $"Could not update port. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                    "API Error");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
     }
 
     private async Task OnNewPortAsync()
     {
-        var dialog = new MainMenuPortDialog(MapSpecToModel(new Port()));
+        var dialog = new MainMenuPortDialog(new PortEntity
+        {
+            Name = "",
+            CountryCode = "",
+            Location = new NpgsqlTypes.NpgsqlPoint { X = 0, Y = 0 }
+        });
 
         if (dialog.ShowDialog() == true)
         {
-            IsLoading = true;
-            try
+            if (dialog.Port != null)
             {
-                if (dialog.Port != null)
-                {
-                    var newPort = await ApiService.ApiClient.PortsPOSTAsync(MapModelToSpec(dialog.Port));
+                var newPort = await ApiService.ApiClient.PortsPOSTAsync(dialog.Port.ToDto());
 
-                    Ports.Add(newPort);
-                }
-            }
-            catch (ApiException apiEx)
-            {
-                MessageBox.Show(
-                    $"Could not create port. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                    "API Error");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-            }
-            finally
-            {
-                IsLoading = false;
+                Ports.Add(newPort.ToEntity());
             }
         }
     }
 
-    private static Shared.Models.Port MapSpecToModel(Port spec) =>
-        new()
-        {
-            Id = spec.Id,
-            Name = spec.Name,
-            CountryCode = spec.CountryCode,
-            Location = new NpgsqlTypes.NpgsqlPoint(spec.Location.X, spec.Location.Y)
-        };
+    private async Task OnRemovePortAsync()
+    {
+        var confirmed = ConfirmationRequested?.Invoke(
+            "Confirm Removal",
+            $"Are you sure you want to remove {CurrentPort.Name}? This action cannot be undone.") ?? false;
 
-    private static Port MapModelToSpec(Shared.Models.Port model) =>
-        new()
-        {
-            Id = model.Id,
-            Name = model.Name,
-            CountryCode = model.CountryCode,
-            Location = new NpgsqlPoint { X = model.Location.X, Y = model.Location.Y }
-        };
+        if (!confirmed) return;
+
+        await ApiService.ApiClient.PortsDELETEAsync(CurrentPort.Id);
+        Ports.Remove(CurrentPort);
+        CurrentPort = null!;
+    }
 }

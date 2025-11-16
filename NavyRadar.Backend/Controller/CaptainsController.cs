@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NavyRadar.Backend.IService;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.Controller;
 
 [ApiController]
-[Authorize(Roles = "Admin")]
 [Route("api/[controller]")]
 public class CaptainsController(ICaptainService captainService) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<Captain>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -21,6 +21,7 @@ public class CaptainsController(ICaptainService captainService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(Captain), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -37,6 +38,7 @@ public class CaptainsController(ICaptainService captainService) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(Captain), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -58,6 +60,7 @@ public class CaptainsController(ICaptainService captainService) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(Captain), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

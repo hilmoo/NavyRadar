@@ -1,6 +1,6 @@
-﻿namespace NavyRadar.Shared.Domain;
+﻿namespace NavyRadar.Shared.Domain.Auth;
 
-public class RegisterDto
+public class PayloadRegister
 {
     public required string Username { get; set; }
     public required string Email { get; set; }

@@ -1,8 +1,8 @@
 ﻿using Npgsql;
 using Dapper;
 using NavyRadar.Backend.IService;
-using NavyRadar.Shared.Domain;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Domain.Account;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.Service;
 
@@ -24,13 +24,19 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
         const string sql =
             $"""
              INSERT INTO "account" (username, password, email, role)
-             VALUES (@Username, @Password, @Email, @Role)
+             VALUES (@Username, @Password, @Email, @Role::account_role)
              RETURNING {SelectColumns}
              """;
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Account>(sql, account);
+        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new
+        {
+            account.Username,
+            account.Password,
+            account.Email,
+            Role = account.Role.ToString()
+        });
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -67,7 +73,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
         return await conn.QuerySingleOrDefaultAsync<Account>(sql, new { Id = id });
     }
 
-    public async Task<Account?> UpdateAsync(int id, UpdateAcc account)
+    public async Task<Account?> UpdateAsync(int id, UpdateAccount account)
     {
         account.Id = id;
 
@@ -81,7 +87,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
 
         if (!string.IsNullOrWhiteSpace(account.Role))
         {
-            setClauses.Add("role = @Role");
+            setClauses.Add("role = @Role::account_role");
         }
 
         var setClause = string.Join(", ", setClauses);
@@ -95,6 +101,13 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
              """;
 
         await using var conn = await dataSource.OpenConnectionAsync();
-        return await conn.QuerySingleOrDefaultAsync<Account>(sql, account);
+        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new
+        {
+            account.Id,
+            account.Username,
+            account.Password,
+            account.Email,
+            account.Role
+        });
     }
 }

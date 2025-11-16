@@ -23,6 +23,12 @@
         <DataTemplate DataType="{x:Type vm:MainMenuMyAccountVm}">
             <local:MenuMyAccount />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MainMenuSailsVm}">
+            <local:MenuSails />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MainMenuSailingVm}">
+            <local:MenuSailing />
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>

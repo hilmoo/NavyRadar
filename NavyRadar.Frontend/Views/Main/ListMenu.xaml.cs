@@ -2,7 +2,7 @@
 
 namespace NavyRadar.Frontend.Views.Main;
 
-public partial class ListMenu : UserControl
+public partial class ListMenu
 {
     public ListMenu()
     {

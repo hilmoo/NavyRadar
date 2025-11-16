@@ -1,4 +1,4 @@
-﻿using NavyRadar.Shared.Models;
+﻿using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.IService;
 

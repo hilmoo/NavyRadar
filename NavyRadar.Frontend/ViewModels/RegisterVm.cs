@@ -1,8 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using NavyRadar.Frontend.Util;
+using NavyRadar.Shared.Entities;
 using NavyRadar.Shared.Spec;
-using RegisterDto = NavyRadar.Shared.Domain.RegisterDto;
 
 namespace NavyRadar.Frontend.ViewModels;
 
@@ -29,18 +28,6 @@ public class RegisterVm : ViewModelBase
         set => SetProperty(ref field, value);
     } = string.Empty;
 
-    public bool IsLoading
-    {
-        get;
-        private set
-        {
-            if (SetProperty(ref field, value))
-            {
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
-    }
-
     public ICommand RegisterCommand { get; }
     public ICommand HomeCommand => _navigationVm.HomeCommand;
     public ICommand SignInCommand => _navigationVm.SignInCommand;
@@ -50,67 +37,21 @@ public class RegisterVm : ViewModelBase
         _navigationVm = navigationVm;
 
         RegisterCommand = new SimpleRelayCommand(
-            async void () =>
-            {
-                try
-                {
-                    await OnRegisterAsync();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show($"An unexpected error occurred: {e.Message}", "Error");
-                }
-            },
+            () => _ = ExecuteLoadingTask(OnRegisterAsync),
             () => !IsLoading);
     }
 
     private async Task OnRegisterAsync()
     {
-        IsLoading = true;
-        try
+        var registerDto = new PayloadRegister
         {
-            var registerDto = new RegisterDto
-            {
-                Username = Username,
-                Password = Password,
-                Email = Email
-            };
-            var account = await ApiService.ApiClient.RegisterAsync(MapModelToSpec(registerDto));
-            ApiService.ApiClient.SetJwtToken(account.Token);
+            Username = Username,
+            Password = Password,
+            Email = Email
+        };
+        var account = await ApiService.ApiClient.RegisterAsync(registerDto);
+        ApiService.ApiClient.SetJwtToken(account.Token);
 
-            _navigationVm.NavigateToMain(MapSpecToModel(account.UserAccount));
-        }
-        catch (ApiException apiEx)
-        {
-            MessageBox.Show(
-                $"Could not register. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}",
-                "API Error");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        _navigationVm.NavigateToMain(account.UserAccount.ToEntity());
     }
-
-    private static Shared.Spec.RegisterDto MapModelToSpec(RegisterDto model) =>
-        new()
-        {
-            Username = model.Username,
-            Password = model.Password,
-            Email = model.Email
-        };
-
-    private static Shared.Models.Account MapSpecToModel(Account spec) =>
-        new()
-        {
-            Id = spec.Id,
-            Username = spec.Username,
-            Email = spec.Email,
-            Password = spec.Password,
-            Role = spec.Role
-        };
 }

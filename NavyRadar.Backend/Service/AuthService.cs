@@ -1,11 +1,10 @@
 ﻿using System.Text;
 using Dapper;
+using NavyRadar.Backend.Helper;
 using NavyRadar.Backend.IService;
-using NavyRadar.Backend.libs;
 using Npgsql;
-using NavyRadar.Shared.Domain;
-using NavyRadar.Shared.Models;
-using NavyRadar.Shared.Util;
+using NavyRadar.Shared.Domain.Auth;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Backend.Service;
 
@@ -20,9 +19,9 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
         role AS Role
         """;
 
-    public async Task<AccWithAuth?> RegisterAsync(RegisterDto registerDto)
+    public async Task<AccountWithAuth?> RegisterAsync(PayloadRegister payloadRegister)
     {
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(payloadRegister.Password);
 
         const string sql =
             $"""
@@ -37,10 +36,10 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
         {
             var account = await conn.QuerySingleOrDefaultAsync<Account>(sql, new
             {
-                registerDto.Username,
+                payloadRegister.Username,
                 Password = hashedPassword,
-                registerDto.Email,
-                Role = nameof(RoleType.User)
+                payloadRegister.Email,
+                Role = nameof(AccountRole.User)
             });
 
             if (account == null)
@@ -49,7 +48,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
             }
 
             var token = GenerateToken(account);
-            return new AccWithAuth
+            return new AccountWithAuth
             {
                 Token = token,
                 UserAccount = account
@@ -61,7 +60,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
         }
     }
 
-    public async Task<AccWithAuth?> SignInService(LoginDto loginDto)
+    public async Task<AccountWithAuth?> SignInService(PayloadLogin payloadLogin)
     {
         const string sql =
             $"""
@@ -70,14 +69,14 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        var account = await conn.QuerySingleOrDefaultAsync<Account>(sql, new { loginDto.Username });
+        var account = await conn.QuerySingleOrDefaultAsync<Account>(sql, new { payloadLogin.Username });
 
         if (account == null)
         {
             return null;
         }
 
-        var isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, account.Password);
+        var isPasswordValid = BCrypt.Net.BCrypt.Verify(payloadLogin.Password, account.Password);
 
         if (!isPasswordValid)
         {
@@ -85,7 +84,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
         }
 
         var token = GenerateToken(account);
-        return new AccWithAuth
+        return new AccountWithAuth
         {
             Token = token,
             UserAccount = account

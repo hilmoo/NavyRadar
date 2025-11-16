@@ -9,6 +9,10 @@
     d:DesignWidth="600"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
     <Grid HorizontalAlignment="Center">
         <Menu>
             <Menu.Resources>
@@ -33,20 +37,38 @@
 
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
+                Command="{Binding BackToHomeCommand}"
+                Header="Home" />
+            <MenuItem
+                d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding ShipsCommand}"
                 Header="Ships"
-                IsChecked="{Binding IsShipsViewSelected, Mode=OneWay}" />
+                IsChecked="{Binding IsShipsViewSelected, Mode=OneWay}"
+                Visibility="{Binding IsNotCaptain, Converter={StaticResource BoolToVis}}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding PortsCommand}"
                 Header="Ports"
-                IsChecked="{Binding IsPortsViewSelected, Mode=OneWay}" />
+                IsChecked="{Binding IsPortsViewSelected, Mode=OneWay}"
+                Visibility="{Binding IsNotCaptain, Converter={StaticResource BoolToVis}}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding AccountsCommand}"
                 Header="Accounts"
                 IsChecked="{Binding IsAccountsViewSelected, Mode=OneWay}"
-                IsEnabled="{Binding IsAdmin}" />
+                Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}" />
+            <MenuItem
+                d:DataContext="{d:DesignInstance Type=vm:MainVm}"
+                Command="{Binding SailsCommand}"
+                Header="Sails"
+                IsChecked="{Binding IsSailsViewSelected, Mode=OneWay}"
+                Visibility="{Binding IsNotCaptain, Converter={StaticResource BoolToVis}}" />
+            <MenuItem
+                d:DataContext="{d:DesignInstance Type=vm:MainVm}"
+                Command="{Binding CaptainCommand}"
+                Header="Steering"
+                IsChecked="{Binding IsCaptainViewSelected, Mode=OneWay}"
+                Visibility="{Binding IsCaptain, Converter={StaticResource BoolToVis}}" />
             <MenuItem
                 d:DataContext="{d:DesignInstance Type=vm:MainVm}"
                 Command="{Binding MyAccountCommand}"

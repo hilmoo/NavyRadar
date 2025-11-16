@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapster" Version="9.0.0-pre01" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3405.78" />
   </ItemGroup>
 

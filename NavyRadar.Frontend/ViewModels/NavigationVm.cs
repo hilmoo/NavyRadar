@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using NavyRadar.Frontend.Util;
-using NavyRadar.Shared.Models;
+using NavyRadar.Shared.Entities;
 
 namespace NavyRadar.Frontend.ViewModels;
 

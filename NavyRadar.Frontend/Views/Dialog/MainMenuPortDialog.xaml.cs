@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
+using NavyRadar.Shared.Entities;
 using NpgsqlTypes;
-using NavyRadar.Shared.Models;
 
 namespace NavyRadar.Frontend.Views.Dialog;
 

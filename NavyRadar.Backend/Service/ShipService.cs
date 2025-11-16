@@ -1,7 +1,9 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using NavyRadar.Backend.IService;
+using NavyRadar.Shared;
+using NavyRadar.Shared.Entities;
 using Npgsql;
-using NavyRadar.Shared.Models;
 
 
 namespace NavyRadar.Backend.Service;
@@ -49,13 +51,22 @@ public class ShipService(NpgsqlDataSource dataSource) : IShipService
         const string sql =
             $"""
              INSERT INTO "ship" (imo_number, mmsi_number, name, type, year_build, length_overall, gross_tonnage)
-             VALUES (@ImoNumber, @MmsiNumber, @Name, @Type, @YearBuild, @LengthOverall, @GrossTonnage)
+             VALUES (@ImoNumber, @MmsiNumber, @Name, @Type::ship_type, @YearBuild, @LengthOverall, @GrossTonnage)
              RETURNING {SelectColumns}
              """;
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, ship);
+        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, new
+        {
+            ship.ImoNumber,
+            ship.MmsiNumber,
+            ship.Name,
+            Type = ship.Type.GetDescription(),
+            ship.YearBuild,
+            ship.LengthOverall,
+            ship.GrossTonnage
+        });
     }
 
     public async Task<Ship?> UpdateAsync(int id, Ship ship)
@@ -68,7 +79,7 @@ public class ShipService(NpgsqlDataSource dataSource) : IShipService
              SET imo_number = @ImoNumber,
                  mmsi_number = @MmsiNumber,
                  name = @Name,
-                 type = @Type,
+                 type = @Type::ship_type,
                  year_build = @YearBuild,
                  length_overall = @LengthOverall,
                  gross_tonnage = @GrossTonnage
@@ -78,7 +89,17 @@ public class ShipService(NpgsqlDataSource dataSource) : IShipService
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, ship);
+        return await conn.QuerySingleOrDefaultAsync<Ship>(sql, new
+        {
+            ship.Id,
+            ship.ImoNumber,
+            ship.MmsiNumber,
+            ship.Name,
+            Type = ship.Type.GetDescription(),
+            ship.YearBuild,
+            ship.LengthOverall,
+            ship.GrossTonnage
+        });
     }
 
     public async Task<bool> DeleteAsync(int id)

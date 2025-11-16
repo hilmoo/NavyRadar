@@ -93,8 +93,7 @@
 
     function getShipTypeKey(shipType) {
         if (!shipType) return '';
-        let key = shipType.replace(/\s+/g, '');
-        return key.charAt(0).toLowerCase() + key.slice(1);
+        return shipType.replace(/\s+/g, '');
     }
 
     let currentFilter = {
