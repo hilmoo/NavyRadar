@@ -12,6 +12,10 @@ Anggota 2: Harun - 23/514148/TK/56466
 
 Anggota 3: Hilmi Musyaffa - 23/516589/TK/56795
 
+## Docs
+
+You can find the openapi docs [here](./NavyRadar.Shared/Spec/openapi.json).
+
 ## Class Diagram
 
 ```mermaid
