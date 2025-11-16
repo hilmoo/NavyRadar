@@ -1,8 +1,9 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "Backend | v1",
-    "version": "1.0.0"
+    "title": "NavyRadar",
+    "description": "NavyRadar Backend API Documentation",
+    "version": "1.1.0"
   },
   "servers": [
     {
@@ -15,7 +16,6 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "AccountsAll",
         "responses": {
           "401": {
             "description": "Unauthorized",
@@ -89,7 +89,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -97,7 +97,6 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "AccountsPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -202,7 +201,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -212,16 +211,15 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "AccountsGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -309,7 +307,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -317,16 +315,15 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "AccountsPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -334,17 +331,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             }
           },
@@ -454,7 +451,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -462,16 +459,15 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "AccountsDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -542,7 +538,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -552,22 +548,21 @@
         "tags": [
           "Accounts"
         ],
-        "operationId": "profile",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAcc"
+                "$ref": "#/components/schemas/UpdateAccount"
               }
             }
           },
@@ -677,7 +672,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -687,22 +682,21 @@
         "tags": [
           "Auth"
         ],
-        "operationId": "register",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterDto"
+                "$ref": "#/components/schemas/PayloadRegister"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterDto"
+                "$ref": "#/components/schemas/PayloadRegister"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterDto"
+                "$ref": "#/components/schemas/PayloadRegister"
               }
             }
           },
@@ -714,17 +708,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               }
             }
@@ -752,7 +746,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -762,22 +756,21 @@
         "tags": [
           "Auth"
         ],
-        "operationId": "signin",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginDto"
+                "$ref": "#/components/schemas/PayloadLogin"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginDto"
+                "$ref": "#/components/schemas/PayloadLogin"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginDto"
+                "$ref": "#/components/schemas/PayloadLogin"
               }
             }
           },
@@ -789,17 +782,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccWithAuth"
+                  "$ref": "#/components/schemas/AccountWithAuth"
                 }
               }
             }
@@ -827,7 +820,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -837,7 +830,6 @@
         "tags": [
           "Captains"
         ],
-        "operationId": "CaptainsAll",
         "responses": {
           "200": {
             "description": "OK",
@@ -911,7 +903,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -919,7 +911,6 @@
         "tags": [
           "Captains"
         ],
-        "operationId": "CaptainsPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1024,7 +1015,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -1034,16 +1025,15 @@
         "tags": [
           "Captains"
         ],
-        "operationId": "CaptainsGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1131,7 +1121,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1139,16 +1129,15 @@
         "tags": [
           "Captains"
         ],
-        "operationId": "CaptainsPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1276,7 +1265,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1284,16 +1273,15 @@
         "tags": [
           "Captains"
         ],
-        "operationId": "CaptainsDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1364,7 +1352,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -1374,7 +1362,6 @@
         "tags": [
           "Ports"
         ],
-        "operationId": "PortsAll",
         "responses": {
           "401": {
             "description": "Unauthorized",
@@ -1428,7 +1415,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1436,7 +1423,6 @@
         "tags": [
           "Ports"
         ],
-        "operationId": "PortsPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1541,7 +1527,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -1551,16 +1537,15 @@
         "tags": [
           "Ports"
         ],
-        "operationId": "PortsGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1628,7 +1613,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1636,16 +1621,15 @@
         "tags": [
           "Ports"
         ],
-        "operationId": "PortsPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1773,7 +1757,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1781,16 +1765,15 @@
         "tags": [
           "Ports"
         ],
-        "operationId": "PortsDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -1861,7 +1844,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -1871,7 +1854,6 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "PositionHistoriesAll",
         "responses": {
           "200": {
             "description": "OK",
@@ -1945,7 +1927,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -1953,7 +1935,6 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "PositionHistoriesPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2058,7 +2039,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -2068,16 +2049,15 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "PositionHistoriesGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2165,7 +2145,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -2173,16 +2153,15 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "PositionHistoriesPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2310,7 +2289,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -2318,16 +2297,15 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "PositionHistoriesDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2398,7 +2376,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -2408,16 +2386,15 @@
         "tags": [
           "PositionHistories"
         ],
-        "operationId": "sail",
         "parameters": [
           {
             "name": "sailId",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2494,7 +2471,392 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/Sailing/active": {
+      "get": {
+        "tags": [
+          "Sailing"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SailWithName"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SailWithName"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SailWithName"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/Sailing/position": {
+      "post": {
+        "tags": [
+          "Sailing"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPositionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPositionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPositionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/Sailing/active/complete": {
+      "put": {
+        "tags": [
+          "Sailing"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
+          }
+        ]
+      }
+    },
+    "/api/Sailing/active/status": {
+      "put": {
+        "tags": [
+          "Sailing"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSailStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSailStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSailStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": [ ]
           }
         ]
       }
@@ -2504,7 +2866,6 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "SailsAll",
         "responses": {
           "401": {
             "description": "Unauthorized",
@@ -2533,7 +2894,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Sail"
+                    "$ref": "#/components/schemas/SailWithName"
                   }
                 }
               },
@@ -2541,7 +2902,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Sail"
+                    "$ref": "#/components/schemas/SailWithName"
                   }
                 }
               },
@@ -2549,7 +2910,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Sail"
+                    "$ref": "#/components/schemas/SailWithName"
                   }
                 }
               }
@@ -2558,7 +2919,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -2566,7 +2927,6 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "SailsPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2593,17 +2953,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               }
             }
@@ -2671,7 +3031,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -2681,7 +3041,6 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "active",
         "responses": {
           "401": {
             "description": "Unauthorized",
@@ -2735,7 +3094,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -2745,16 +3104,15 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "SailsGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2764,17 +3122,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               }
             }
@@ -2822,7 +3180,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -2830,16 +3188,15 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "SailsPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -2869,17 +3226,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Sail"
+                  "$ref": "#/components/schemas/SailWithName"
                 }
               }
             }
@@ -2967,7 +3324,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -2975,16 +3332,15 @@
         "tags": [
           "Sails"
         ],
-        "operationId": "SailsDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -3055,7 +3411,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -3065,7 +3421,6 @@
         "tags": [
           "Ship"
         ],
-        "operationId": "ShipAll",
         "responses": {
           "401": {
             "description": "Unauthorized",
@@ -3119,7 +3474,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -3127,7 +3482,6 @@
         "tags": [
           "Ship"
         ],
-        "operationId": "ShipPOST",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3232,7 +3586,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -3242,16 +3596,15 @@
         "tags": [
           "Ship"
         ],
-        "operationId": "ShipGET",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -3319,7 +3672,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -3327,16 +3680,15 @@
         "tags": [
           "Ship"
         ],
-        "operationId": "ShipPUT",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -3464,7 +3816,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       },
@@ -3472,16 +3824,15 @@
         "tags": [
           "Ship"
         ],
-        "operationId": "ShipDELETE",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
-              "format": "int32",
-              "pattern": "^-?(?:0|[1-9]\\d*)$"
+              "format": "int32"
             }
           }
         ],
@@ -3552,7 +3903,7 @@
         },
         "security": [
           {
-            "Bearer": []
+            "Bearer": [ ]
           }
         ]
       }
@@ -3561,21 +3912,21 @@
   "components": {
     "schemas": {
       "Account": {
-        "type": "object",
         "required": [
           "username",
           "password",
           "email",
           "role"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "username": {
             "type": "string"
@@ -3587,16 +3938,19 @@
             "type": "string"
           },
           "role": {
-            "type": "string"
+            "$ref": "#/components/schemas/AccountRole"
           }
         }
       },
-      "AccWithAuth": {
-        "type": "object",
+      "AccountRole": {
+        "type": "integer"
+      },
+      "AccountWithAuth": {
         "required": [
           "token",
           "userAccount"
         ],
+        "type": "object",
         "properties": {
           "token": {
             "type": "string"
@@ -3607,23 +3961,27 @@
         }
       },
       "ActiveSailPosition": {
+        "required": [
+          "shipName",
+          "shipType"
+        ],
         "type": "object",
         "properties": {
           "sailId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "shipId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "shipName": {
             "type": "string"
@@ -3640,28 +3998,74 @@
           }
         }
       },
-      "Captain": {
+      "AddPositionRequest": {
+        "required": [
+          "latitude",
+          "longitude",
+          "speedKnots",
+          "headingDegrees"
+        ],
         "type": "object",
+        "properties": {
+          "latitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "longitude": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "speedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "headingDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "Captain": {
         "required": [
           "firstName",
-          "lastName"
+          "lastName",
+          "licenseNumber"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "accountId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "firstName": {
             "type": "string"
@@ -3670,19 +4074,37 @@
             "type": "string"
           },
           "licenseNumber": {
-            "type": [
-              "null",
-              "string"
-            ]
+            "type": "string"
           }
         }
       },
-      "LoginDto": {
+      "NpgsqlPoint": {
         "type": "object",
+        "properties": {
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "PayloadLogin": {
         "required": [
           "username",
           "password"
         ],
+        "type": "object",
         "properties": {
           "username": {
             "type": "string"
@@ -3692,42 +4114,40 @@
           }
         }
       },
-      "NpgsqlPoint": {
+      "PayloadRegister": {
+        "required": [
+          "username",
+          "email",
+          "password"
+        ],
         "type": "object",
         "properties": {
-          "x": {
-            "type": [
-              "number",
-              "string"
-            ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"
+          "username": {
+            "type": "string"
           },
-          "y": {
-            "type": [
-              "number",
-              "string"
-            ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$"
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
           }
         }
       },
       "Port": {
-        "type": "object",
         "required": [
           "name",
           "countryCode",
           "location"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "name": {
             "type": "string"
@@ -3741,47 +4161,47 @@
         }
       },
       "PositionHistory": {
-        "type": "object",
         "required": [
-          "coordinates"
+          "coordinates",
+          "speedKnots",
+          "headingDegrees"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "sailId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "coordinates": {
             "$ref": "#/components/schemas/NpgsqlPoint"
           },
           "speedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
-              "null",
               "number",
               "string"
             ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            "format": "double"
           },
           "headingDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
-              "null",
               "string"
             ],
-            "format": "int16",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "timestamp": {
             "type": "string",
@@ -3805,13 +4225,13 @@
             ]
           },
           "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
-              "integer",
               "null",
+              "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "detail": {
             "type": [
@@ -3827,79 +4247,58 @@
           }
         }
       },
-      "RegisterDto": {
-        "type": "object",
-        "required": [
-          "username",
-          "email",
-          "password"
-        ],
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        }
-      },
       "Sail": {
-        "type": "object",
         "required": [
-          "status"
+          "status",
+          "departureTime"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "shipId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "captainId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "originPortId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "destinationPortId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "status": {
             "$ref": "#/components/schemas/SailStatus"
           },
           "departureTime": {
-            "type": [
-              "null",
-              "string"
-            ],
+            "type": "string",
             "format": "date-time"
           },
           "arrivalTime": {
@@ -3910,113 +4309,214 @@
             "format": "date-time"
           },
           "totalDistanceNm": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            "format": "double"
           },
           "averageSpeedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            "format": "double"
           },
           "maxSpeedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
             "type": [
               "null",
               "number",
               "string"
             ],
-            "format": "double",
-            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$"
+            "format": "double"
           }
         }
       },
       "SailStatus": {
         "type": "integer"
       },
-      "Ship": {
-        "type": "object",
+      "SailWithName": {
         "required": [
-          "imoNumber",
-          "name"
+          "status",
+          "departureTime"
         ],
+        "type": "object",
         "properties": {
+          "originPortName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "destinationPortName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
+          },
+          "shipId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "captainId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "originPortId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "destinationPortId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SailStatus"
+          },
+          "departureTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "arrivalTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "totalDistanceNm": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "averageSpeedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "maxSpeedKnots": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "Ship": {
+        "required": [
+          "imoNumber",
+          "mmsiNumber",
+          "name",
+          "type",
+          "yearBuild",
+          "lengthOverall",
+          "grossTonnage"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "imoNumber": {
             "type": "string"
           },
           "mmsiNumber": {
-            "type": [
-              "null",
-              "string"
-            ]
+            "type": "string"
           },
           "name": {
             "type": "string"
           },
           "type": {
-            "type": [
-              "null",
-              "string"
-            ]
+            "$ref": "#/components/schemas/ShipType"
           },
           "yearBuild": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
-              "null",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "lengthOverall": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
-              "null",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "grossTonnage": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
-              "null",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           }
         }
       },
-      "UpdateAcc": {
-        "type": "object",
+      "ShipType": {
+        "type": "integer"
+      },
+      "UpdateAccount": {
         "required": [
           "username",
           "email"
         ],
+        "type": "object",
         "properties": {
           "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "integer",
               "string"
             ],
-            "format": "int32",
-            "pattern": "^-?(?:0|[1-9]\\d*)$"
+            "format": "int32"
           },
           "username": {
             "type": "string"
@@ -4035,6 +4535,17 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "UpdateSailStatusRequest": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/SailStatus"
           }
         }
       }
@@ -4062,6 +4573,9 @@
     },
     {
       "name": "PositionHistories"
+    },
+    {
+      "name": "Sailing"
     },
     {
       "name": "Sails"

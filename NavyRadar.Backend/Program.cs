@@ -79,7 +79,17 @@ builder.Services.AddScoped<ISailingService, SailingService>();
 // --- Core ASP.NET Services ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi(options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info.Version = "1.1.0";
+        document.Info.Title = "NavyRadar";
+        document.Info.Description = "NavyRadar Backend API Documentation";
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddCors(options =>
 {
