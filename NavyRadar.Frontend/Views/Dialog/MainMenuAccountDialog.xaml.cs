@@ -5,10 +5,10 @@ namespace NavyRadar.Frontend.Views.Dialog;
 
 public partial class MainMenuAccountDialog
 {
-    public Account? Account { get; private set; }
+    public AccountPassword? Account { get; private set; }
     private readonly bool _isUpdateMode;
 
-    public MainMenuAccountDialog(Account? account)
+    public MainMenuAccountDialog(AccountPassword? account)
     {
         InitializeComponent();
 
@@ -39,7 +39,7 @@ public partial class MainMenuAccountDialog
         }
     }
 
-    private void PopulateFields(Account account)
+    private void PopulateFields(AccountPassword account)
     {
         UsernameTextBox.Text = account.Username;
         PasswordTextBox.Password = "";
@@ -103,7 +103,7 @@ public partial class MainMenuAccountDialog
         }
         else
         {
-            Account = new Account
+            Account = new AccountPassword
             {
                 Username = username,
                 Password = password,

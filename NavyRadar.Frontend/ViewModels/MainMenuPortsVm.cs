@@ -36,7 +36,6 @@ public class MainMenuPortsVm : ViewModelBase
 
     public ICommand UpdatePortCommand { get; }
     public ICommand NewPortCommand { get; }
-    public ICommand RefreshCommand { get; }
     public ICommand RemovePortCommand { get; }
 
     public MainMenuPortsVm()
@@ -47,10 +46,6 @@ public class MainMenuPortsVm : ViewModelBase
 
         NewPortCommand = new SimpleRelayCommand(
             () => _ = ExecuteLoadingTask(OnNewPortAsync),
-            () => !IsLoading);
-
-        RefreshCommand = new SimpleRelayCommand(
-            () => _ = ExecuteLoadingTask(LoadPortsAsync),
             () => !IsLoading);
 
         RemovePortCommand = new SimpleRelayCommand(

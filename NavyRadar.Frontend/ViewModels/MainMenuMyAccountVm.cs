@@ -2,13 +2,13 @@
 using NavyRadar.Frontend.Util;
 using NavyRadar.Frontend.Views.Dialog;
 using NavyRadar.Shared.Spec;
-using AccountEntity = NavyRadar.Shared.Entities.Account;
+using AccountPasswordEntity = NavyRadar.Shared.Entities.AccountPassword;
 
 namespace NavyRadar.Frontend.ViewModels;
 
 public class MainMenuMyAccountVm : ViewModelBase
 {
-    public AccountEntity CurrentAccount
+    public AccountPasswordEntity CurrentAccount
     {
         get;
         init

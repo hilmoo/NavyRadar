@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:NavyRadar.Frontend.ViewModels"
+    xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     d:DataContext="{d:DesignInstance Type=vm:MainMenuSailingVm}"
     d:DesignHeight="800"
     d:DesignWidth="300"
@@ -88,7 +89,7 @@
                 <Button
                     Grid.Row="2"
                     Width="150"
-                    Margin="0,20,20,10"
+                    Margin="0,0,20,10"
                     HorizontalAlignment="Center"
                     Command="{Binding ToggleSatusCommand}"
                     Content="Toggle Sail Status" />
@@ -96,7 +97,7 @@
                 <Button
                     Grid.Row="3"
                     Width="150"
-                    Margin="0,0,20,20"
+                    Margin="0,20,20,20"
                     HorizontalAlignment="Center"
                     Command="{Binding CompleteSailCommand}"
                     Content="Complete Sailing" />
@@ -109,6 +110,11 @@
                 ResizeBehavior="PreviousAndNext"
                 ResizeDirection="Columns" />
 
+            <wv2:WebView2
+                x:Name="WebView"
+                Grid.Column="2"
+                Margin="10,10,10,5"
+                Loaded="WebView_OnLoaded" />
 
         </Grid>
         <TextBlock

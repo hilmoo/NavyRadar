@@ -17,7 +17,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
         role AS Role
         """;
 
-    public async Task<Account?> CreateAsync(Account account)
+    public async Task<AccountBase?> CreateAsync(AccountPassword account)
     {
         account.Password = BCrypt.Net.BCrypt.HashPassword(account.Password);
 
@@ -30,7 +30,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new
+        return await conn.QuerySingleOrDefaultAsync<AccountPassword>(sql, new
         {
             account.Username,
             account.Password,
@@ -51,7 +51,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
         return rowsAffected > 0;
     }
 
-    public async Task<IEnumerable<Account>> GetAllAsync()
+    public async Task<IEnumerable<AccountBase>> GetAllAsync()
     {
         const string sql =
             $"""
@@ -59,10 +59,10 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
              """;
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QueryAsync<Account>(sql);
+        return await conn.QueryAsync<AccountPassword>(sql);
     }
 
-    public async Task<Account?> GetByIdAsync(int id)
+    public async Task<AccountBase?> GetByIdAsync(int id)
     {
         const string sql =
             $"""
@@ -70,10 +70,10 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
              """;
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new { Id = id });
+        return await conn.QuerySingleOrDefaultAsync<AccountPassword>(sql, new { Id = id });
     }
 
-    public async Task<Account?> UpdateAsync(int id, UpdateAccount account)
+    public async Task<AccountBase?> UpdateAsync(int id, UpdateAccount account)
     {
         account.Id = id;
 
@@ -101,7 +101,7 @@ public class AccountService(NpgsqlDataSource dataSource) : IAccountService
              """;
 
         await using var conn = await dataSource.OpenConnectionAsync();
-        return await conn.QuerySingleOrDefaultAsync<Account>(sql, new
+        return await conn.QuerySingleOrDefaultAsync<AccountPassword>(sql, new
         {
             account.Id,
             account.Username,

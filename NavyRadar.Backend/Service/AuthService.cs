@@ -34,7 +34,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
 
         try
         {
-            var account = await conn.QuerySingleOrDefaultAsync<Account>(sql, new
+            var account = await conn.QuerySingleOrDefaultAsync<AccountPassword>(sql, new
             {
                 payloadRegister.Username,
                 Password = hashedPassword,
@@ -69,7 +69,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        var account = await conn.QuerySingleOrDefaultAsync<Account>(sql, new { payloadLogin.Username });
+        var account = await conn.QuerySingleOrDefaultAsync<AccountPassword>(sql, new { payloadLogin.Username });
 
         if (account == null)
         {
@@ -91,7 +91,7 @@ public class AuthService(NpgsqlDataSource dataSource) : IAuthService
         };
     }
 
-    private static string GenerateToken(Account account)
+    private static string GenerateToken(AccountPassword account)
     {
         var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")!;
         const string issuer = "NavyRadar";

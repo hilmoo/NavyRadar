@@ -4,17 +4,19 @@ using Dto = NavyRadar.Shared.Spec;
 
 namespace NavyRadar.Shared.Entities;
 
-public class Account
+public class AccountBase
 {
     public int Id { get; set; }
 
     [Required] public required string Username { get; set; }
-
-    [Required] public required string Password { get; set; }
-
     [Required] public required string Email { get; set; }
 
     [Required] public required AccountRole Role { get; set; }
+}
+
+public class AccountPassword : AccountBase
+{
+    [Required] public required string Password { get; set; }
 }
 
 public enum AccountRole
@@ -26,27 +28,49 @@ public enum AccountRole
 
 public static class AccountMapper
 {
-    public static Dto.Account ToDto(this Account entity)
+    public static Dto.AccountBase ToDto(this AccountBase entity)
     {
-        return new Dto.Account
+        return new Dto.AccountBase
         {
             Id = entity.Id,
             Username = entity.Username,
-            Password = entity.Password,
             Email = entity.Email,
             Role = (int)entity.Role
         };
     }
 
-    public static Account ToEntity(this Dto.Account dto)
+    public static AccountBase ToEntity(this Dto.AccountBase dto)
     {
-        return new Account
+        return new AccountBase
         {
             Id = dto.Id,
             Username = dto.Username,
-            Password = dto.Password,
             Email = dto.Email,
             Role = (AccountRole)dto.Role
+        };
+    }
+
+    public static AccountPassword ToPasswordAccountEntity(this AccountBase baseAccount)
+    {
+        return new AccountPassword
+        {
+            Id = baseAccount.Id,
+            Username = baseAccount.Username,
+            Email = baseAccount.Email,
+            Role = baseAccount.Role,
+            Password = string.Empty
+        };
+    }
+
+    public static Dto.AccountPassword ToPasswordAccountDto(this Dto.AccountBase baseAccount)
+    {
+        return new Dto.AccountPassword
+        {
+            Id = baseAccount.Id,
+            Username = baseAccount.Username,
+            Email = baseAccount.Email,
+            Role = baseAccount.Role,
+            Password = string.Empty
         };
     }
 }

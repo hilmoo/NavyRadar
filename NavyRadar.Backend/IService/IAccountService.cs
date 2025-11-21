@@ -5,9 +5,9 @@ namespace NavyRadar.Backend.IService;
 
 public interface IAccountService
 {
-    Task<IEnumerable<Account>> GetAllAsync();
-    Task<Account?> GetByIdAsync(int id);
-    Task<Account?> CreateAsync(Account account);
-    Task<Account?> UpdateAsync(int id, UpdateAccount account);
+    Task<IEnumerable<AccountBase>> GetAllAsync();
+    Task<AccountBase?> GetByIdAsync(int id);
+    Task<AccountBase?> CreateAsync(AccountPassword account);
+    Task<AccountBase?> UpdateAsync(int id, UpdateAccount account);
     Task<bool> DeleteAsync(int id);
 }

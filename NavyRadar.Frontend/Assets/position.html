@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>NavyRadar - Ship History</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        html, body { height: 100%; margin: 0; font-family: sans-serif; }
+        #map { height: 100vh; width: 100vw; display: block; }
+        .custom-tooltip {
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 12px;
+        }
+        .legend-title { font-weight: 600; margin-bottom: 8px; color: #333; }
+        .gradient-bar {
+            width: 120px;
+            height: 12px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 10px;
+        }
+        .pulse-marker {
+            width: 16px;
+            height: 16px;
+            background: #ec4899;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 rgba(236, 72, 153, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(236, 72, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="legend">
+    <div class="legend-title">📍 Traversal Path</div>
+    <div class="gradient-bar"></div>
+    <div class="legend-labels">
+        <span id="start-time">Oldest</span>
+        <span id="end-time">Latest</span>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const map = L.map('map', {
+        worldCopyJump: false,
+        maxBounds: [[-85, -180], [85, 180]],
+        maxBoundsViscosity: 1.0,
+        minZoom: 3,
+        maxZoom: 19
+    }).setView([-7.49, 110.0], 7);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        noWrap: true,
+        bounds: [[-85, -180], [85, 180]],
+        minZoom: 2,
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    function interpolateColor(t) {
+        // Blue -> Purple -> Pink gradient
+        const colors = [
+            { r: 59, g: 130, b: 246 },  // blue
+            { r: 139, g: 92, b: 246 },  // purple
+            { r: 236, g: 72, b: 153 }   // pink
+        ];
+        const idx = t * (colors.length - 1);
+        const i = Math.floor(idx);
+        const f = idx - i;
+        if (i >= colors.length - 1) return `rgb(${colors[colors.length-1].r},${colors[colors.length-1].g},${colors[colors.length-1].b})`;
+        const c1 = colors[i], c2 = colors[i + 1];
+        const r = Math.round(c1.r + (c2.r - c1.r) * f);
+        const g = Math.round(c1.g + (c2.g - c1.g) * f);
+        const b = Math.round(c1.b + (c2.b - c1.b) * f);
+        return `rgb(${r},${g},${b})`;
+    }
+
+    function formatTime(date) {
+        return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function renderShipHistory(sailId) {
+        const res = await fetch(`http://localhost:5000/api/PositionHistories/sail/${sailId}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        if (!data || data.length === 0) return;
+
+        data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        const startDate = new Date(data[0].timestamp);
+        const endDate = new Date(data[data.length - 1].timestamp);
+        document.getElementById('start-time').textContent = formatTime(startDate);
+        document.getElementById('end-time').textContent = formatTime(endDate);
+
+        // Draw gradient path segments
+        for (let i = 0; i < data.length - 1; i++) {
+            const p1 = [data[i].coordinates.y, data[i].coordinates.x];
+            const p2 = [data[i + 1].coordinates.y, data[i + 1].coordinates.x];
+            const t = i / (data.length - 1);
+            const color = interpolateColor(t);
+
+            L.polyline([p1, p2], {
+                color: color,
+                weight: 4,
+                opacity: 0.85
+            }).addTo(map);
+        }
+
+        // Add markers
+        data.forEach((point, index) => {
+            const lat = point.coordinates.y;
+            const lng = point.coordinates.x;
+            const date = new Date(point.timestamp);
+            const isLatest = index === data.length - 1;
+            const t = index / (data.length - 1);
+
+            let marker;
+            if (isLatest) {
+                marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: '',
+                        html: '<div class="pulse-marker"></div>',
+                        iconSize: [22, 22],
+                        iconAnchor: [11, 11]
+                    })
+                });
+            } else {
+                marker = L.circleMarker([lat, lng], {
+                    radius: 5,
+                    fillColor: interpolateColor(t),
+                    color: '#fff',
+                    weight: 2,
+                    fillOpacity: 0.9
+                });
+            }
+
+            marker.bindTooltip(`
+                <div>
+                    <strong>${formatTime(date)}</strong><br>
+                    <span style="color:#aaa">Lat:</span> ${lat.toFixed(4)} &nbsp;
+                    <span style="color:#aaa">Lng:</span> ${lng.toFixed(4)}<br>
+                    <span style="color:#aaa">Speed:</span> ${point.speedKnots} kts &nbsp;
+                    <span style="color:#aaa">Heading:</span> ${point.headingDegrees}°
+                </div>
+            `, { direction: 'top', className: 'custom-tooltip' });
+
+            marker.addTo(map);
+        });
+
+        const latestPoint = [data[data.length - 1].coordinates.y, data[data.length - 1].coordinates.x];
+        map.setView(latestPoint, 10);
+    }
+    renderShipHistory(1);
+</script>
+</body>
+</html>

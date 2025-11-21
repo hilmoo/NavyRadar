@@ -6,7 +6,7 @@ using NavyRadar.Shared.Domain.Sail;
 using NavyRadar.Shared.Entities;
 using NavyRadar.Shared.Spec;
 using SailWithNameEntity = NavyRadar.Shared.Domain.Sail.SailWithName;
-using AccountEntity = NavyRadar.Shared.Entities.Account;
+using AccountPasswordEntity = NavyRadar.Shared.Entities.AccountPassword;
 
 namespace NavyRadar.Frontend.ViewModels;
 
@@ -21,25 +21,22 @@ public class MainMenuSailingVm : ViewModelBase
             field = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasActiveSail));
+            CommandManager.InvalidateRequerySuggested();
         }
     }
 
     public bool HasActiveSail => CurrentSail != null;
 
-    public AccountEntity CurrentAccount { get; init; } = null!;
+    public AccountPasswordEntity CurrentAccount { get; init; } = null!;
 
     public event Func<string, string, bool>? ConfirmationRequested;
-    public new event Action<string, string>? ErrorOccurred;
-    public ICommand RefreshCommand { get; }
     public ICommand AddPositionCommand { get; }
     public ICommand CompleteSailCommand { get; }
     public ICommand ToggleSatusCommand { get; }
 
     public MainMenuSailingVm()
     {
-        RefreshCommand = new SimpleRelayCommand(
-            () => _ = ExecuteLoadingTask(LoadSailsAsync),
-            () => !IsLoading);
+        _ = ExecuteLoadingTask(LoadSailsAsync);
 
         AddPositionCommand = new SimpleRelayCommand(
             () => _ = ExecuteLoadingTask(OnNewPositionAsync),
@@ -52,39 +49,12 @@ public class MainMenuSailingVm : ViewModelBase
         ToggleSatusCommand = new SimpleRelayCommand(
             () => _ = OnToggleStatusAsync(),
             () => !IsLoading && HasActiveSail);
-
-        _ = ExecuteLoadingTask(LoadSailsAsync);
     }
 
     private async Task LoadSailsAsync()
     {
-        try
-        {
-            var sailDto = await ApiService.ApiClient.ActiveAsync();
-            CurrentSail = sailDto.ToEntity();
-        }
-        catch (ApiException apiEx) when (apiEx.StatusCode == 404)
-        {
-            CurrentSail = null;
-        }
-        catch (ApiException apiEx)
-        {
-            Debug.WriteLine($"API Error: {apiEx.StatusCode} - {apiEx.Response}");
-            ErrorOccurred?.Invoke(
-                "API Error",
-                $"Could not perform operation. Server responded with {apiEx.StatusCode}.\n{apiEx.Response}");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Unexpected Error: {ex.Message}");
-            ErrorOccurred?.Invoke(
-                "Error",
-                $"An unexpected error occurred: {ex.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        var sailDto = await ApiService.ApiClient.ActiveAsync();
+        CurrentSail = sailDto.ToEntity();
     }
 
     private static async Task OnNewPositionAsync()

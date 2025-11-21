@@ -5,7 +5,7 @@ using NavyRadar.Frontend.Util;
 using NavyRadar.Frontend.Views.Dialog;
 using NavyRadar.Shared.Entities;
 using NavyRadar.Shared.Spec;
-using AccountEntity = NavyRadar.Shared.Entities.Account;
+using AccountPasswordEntity = NavyRadar.Shared.Entities.AccountPassword;
 using CaptainEntity = NavyRadar.Shared.Entities.Captain;
 using CaptainSpec = NavyRadar.Shared.Spec.Captain;
 
@@ -13,9 +13,9 @@ namespace NavyRadar.Frontend.ViewModels;
 
 public class MainMenuAccountsVm : ViewModelBase
 {
-    public ObservableCollection<AccountEntity> Accounts { get; } = [];
+    public ObservableCollection<AccountPasswordEntity> Accounts { get; } = [];
 
-    public AccountEntity? CurrentAccount
+    public AccountPasswordEntity? CurrentAccount
     {
         get;
         set
@@ -44,7 +44,6 @@ public class MainMenuAccountsVm : ViewModelBase
 
     public ICommand UpdateAccountCommand { get; }
     public ICommand NewAccountCommand { get; }
-    public ICommand RefreshCommand { get; }
     public ICommand AssignCaptainCommand { get; }
     public ICommand RemoveCaptainCommand { get; }
     public ICommand RemoveAccountCommand { get; }
@@ -57,10 +56,6 @@ public class MainMenuAccountsVm : ViewModelBase
 
         NewAccountCommand = new SimpleRelayCommand(
             () => _ = ExecuteLoadingTask(OnNewAccountAsync),
-            () => !IsLoading);
-
-        RefreshCommand = new SimpleRelayCommand(
-            () => _ = ExecuteLoadingTask(LoadAccountsAsync),
             () => !IsLoading);
 
         AssignCaptainCommand = new SimpleRelayCommand(
@@ -94,7 +89,7 @@ public class MainMenuAccountsVm : ViewModelBase
         var accountsFromServer = await ApiService.ApiClient.AccountsAllAsync();
         foreach (var accountSpec in accountsFromServer)
         {
-            Accounts.Add(accountSpec.ToEntity());
+            Accounts.Add(accountSpec.ToEntity().ToPasswordAccountEntity());
         }
 
         CurrentAccount = Accounts.FirstOrDefault();
@@ -104,13 +99,13 @@ public class MainMenuAccountsVm : ViewModelBase
     {
         if (CurrentAccount == null) return;
 
-        var accountToEdit = new AccountEntity
+        var accountToEdit = new AccountPasswordEntity
         {
             Id = CurrentAccount.Id,
             Username = CurrentAccount.Username,
             Email = CurrentAccount.Email,
-            Password = "",
-            Role = CurrentAccount.Role
+            Role = CurrentAccount.Role,
+            Password = ""
         };
 
         var dialog = new MainMenuAccountDialog(accountToEdit);
@@ -120,19 +115,13 @@ public class MainMenuAccountsVm : ViewModelBase
             if (dialog.Account == null) return;
 
             var updatedEntity = dialog.Account;
-            var passwordToSend = updatedEntity.Password;
-
-            if (passwordToSend == CurrentAccount.Password)
-            {
-                passwordToSend = "";
-            }
 
             var updatedAccount = await ApiService.ApiClient.AccountsPUTAsync(updatedEntity.Id, new UpdateAccount
             {
                 Id = updatedEntity.Id,
                 Username = updatedEntity.Username,
                 Email = updatedEntity.Email,
-                Password = passwordToSend,
+                Password = updatedEntity.Password,
                 Role = updatedEntity.Role.ToString()
             });
 
@@ -146,8 +135,8 @@ public class MainMenuAccountsVm : ViewModelBase
 
                 if (index != -1)
                 {
-                    Accounts[index] = updatedAccountEntity;
-                    CurrentAccount = updatedAccountEntity;
+                    Accounts[index] = updatedAccountEntity.ToPasswordAccountEntity();
+                    CurrentAccount = updatedAccountEntity.ToPasswordAccountEntity();
                 }
             }
         }
@@ -155,7 +144,7 @@ public class MainMenuAccountsVm : ViewModelBase
 
     private async Task OnNewAccountAsync()
     {
-        var dialog = new MainMenuAccountDialog(new AccountEntity
+        var dialog = new MainMenuAccountDialog(new AccountPasswordEntity
         {
             Username = "",
             Password = "",
@@ -167,11 +156,12 @@ public class MainMenuAccountsVm : ViewModelBase
         {
             if (dialog.Account != null)
             {
-                var newAccountSpec = await ApiService.ApiClient.AccountsPOSTAsync(dialog.Account.ToDto());
+                var newAccountSpec =
+                    await ApiService.ApiClient.AccountsPOSTAsync(dialog.Account.ToDto().ToPasswordAccountDto());
 
                 var newEntity = newAccountSpec.ToEntity();
-                Accounts.Add(newEntity);
-                CurrentAccount = newEntity;
+                Accounts.Add(newEntity.ToPasswordAccountEntity());
+                CurrentAccount = newEntity.ToPasswordAccountEntity();
             }
         }
     }
@@ -210,10 +200,10 @@ public class MainMenuAccountsVm : ViewModelBase
             var index = Accounts.IndexOf(CurrentAccount);
             if (index != -1)
             {
-                Accounts[index] = updatedAccountEntity;
+                Accounts[index] = updatedAccountEntity.ToPasswordAccountEntity();
             }
 
-            CurrentAccount = updatedAccountEntity;
+            CurrentAccount = updatedAccountEntity.ToPasswordAccountEntity();
 
             Debug.WriteLine("Captain assignment successful.");
         }
@@ -245,10 +235,10 @@ public class MainMenuAccountsVm : ViewModelBase
         var index = Accounts.IndexOf(CurrentAccount);
         if (index != -1)
         {
-            Accounts[index] = updatedAccountSpec.ToEntity();
+            Accounts[index] = updatedAccountSpec.ToEntity().ToPasswordAccountEntity();
         }
 
-        CurrentAccount = updatedAccountSpec.ToEntity();
+        CurrentAccount = updatedAccountSpec.ToEntity().ToPasswordAccountEntity();
 
         Debug.WriteLine("Captain removal successful.");
     }

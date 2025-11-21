@@ -3,5 +3,5 @@
 public class AccountWithAuth
 {
     public required string Token { get; set; }
-    public required Entities.Account UserAccount { get; set; }
+    public required Entities.AccountBase UserAccount { get; set; }
 }

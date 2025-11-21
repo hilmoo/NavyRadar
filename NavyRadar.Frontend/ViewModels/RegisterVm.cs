@@ -52,6 +52,6 @@ public class RegisterVm : ViewModelBase
         var account = await ApiService.ApiClient.RegisterAsync(registerDto);
         ApiService.ApiClient.SetJwtToken(account.Token);
 
-        _navigationVm.NavigateToMain(account.UserAccount.ToEntity());
+        _navigationVm.NavigateToMain(account.UserAccount.ToEntity().ToPasswordAccountEntity());
     }
 }

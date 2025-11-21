@@ -21,7 +21,7 @@ public class NavigationVm : ViewModelBase
         }
     }
 
-    public Account? CurrentAccount { get; set; }
+    public AccountPassword? CurrentAccount { get; set; }
 
     public ICommand HomeCommand { get; set; }
     public ICommand SignInCommand { get; set; }
@@ -67,7 +67,7 @@ public class NavigationVm : ViewModelBase
         CurrentView = _homeVm;
     }
 
-    public void NavigateToMain(Account userAccount)
+    public void NavigateToMain(AccountPassword userAccount)
     {
         CurrentAccount = userAccount;
         var mainVm = new MainVm(this);

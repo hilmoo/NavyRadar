@@ -38,7 +38,6 @@ public class MainMenuShipsVm : ViewModelBase
 
     public ICommand UpdateShipCommand { get; }
     public ICommand NewShipCommand { get; }
-    public ICommand RefreshCommand { get; }
     public ICommand RemoveShipCommand { get; }
 
     public MainMenuShipsVm()
@@ -49,10 +48,6 @@ public class MainMenuShipsVm : ViewModelBase
 
         NewShipCommand = new SimpleRelayCommand(
             () => _ = ExecuteLoadingTask(OnNewShipAsync),
-            () => !IsLoading);
-
-        RefreshCommand = new SimpleRelayCommand(
-            () => _ = ExecuteLoadingTask(LoadShipsAsync),
             () => !IsLoading);
 
         RemoveShipCommand = new SimpleRelayCommand(

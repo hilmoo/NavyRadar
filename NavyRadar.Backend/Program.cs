@@ -84,7 +84,7 @@ builder.Services.AddOpenApi(options =>
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
-        document.Info.Version = "1.1.0";
+        document.Info.Version = "1.2.0";
         document.Info.Title = "NavyRadar";
         document.Info.Description = "NavyRadar Backend API Documentation";
         return Task.CompletedTask;

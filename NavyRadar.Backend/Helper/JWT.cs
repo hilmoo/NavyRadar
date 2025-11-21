@@ -7,7 +7,7 @@ namespace NavyRadar.Backend.Helper;
 
 public class Jwt
 {
-    public static string GenerateJwtToken(Account user, byte[] key, string issuer, string audience)
+    public static string GenerateJwtToken(AccountPassword user, byte[] key, string issuer, string audience)
     {
         var securityKey = new SymmetricSecurityKey(key);
 

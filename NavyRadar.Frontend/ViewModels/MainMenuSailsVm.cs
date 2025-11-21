@@ -37,7 +37,6 @@ public class MainMenuSailsVm : ViewModelBase
 
     public ICommand UpdateSailCommand { get; }
     public ICommand NewSailCommand { get; }
-    public ICommand RefreshCommand { get; }
     public ICommand RemoveSailCommand { get; }
 
     public MainMenuSailsVm()
@@ -48,10 +47,6 @@ public class MainMenuSailsVm : ViewModelBase
 
         NewSailCommand = new SimpleRelayCommand(
             () => _ = ExecuteLoadingTask(OnNewSailAsync),
-            () => !IsLoading);
-
-        RefreshCommand = new SimpleRelayCommand(
-            () => _ = ExecuteLoadingTask(LoadSailsAsync),
             () => !IsLoading);
 
         RemoveSailCommand = new SimpleRelayCommand(

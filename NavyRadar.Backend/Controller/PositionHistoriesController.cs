@@ -39,7 +39,6 @@ public class PositionHistoriesController(IPositionHistoryService positionHistory
     }
 
     [HttpGet("sail/{sailId:int}")]
-    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<PositionHistory>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

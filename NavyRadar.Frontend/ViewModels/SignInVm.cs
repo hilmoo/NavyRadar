@@ -45,6 +45,6 @@ public class SignInVm : ViewModelBase
         var account = await ApiService.ApiClient.SigninAsync(loginDto);
         ApiService.ApiClient.SetJwtToken(account.Token);
 
-        _navigationVm.NavigateToMain(account.UserAccount.ToEntity());
+        _navigationVm.NavigateToMain(account.UserAccount.ToEntity().ToPasswordAccountEntity());
     }
 }
