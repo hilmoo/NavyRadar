@@ -13,6 +13,7 @@
     MinWidth="1120"
     MinHeight="720"
     AllowsTransparency="False"
+    Icon="Assets/icon.ico"
     ResizeMode="CanResize"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -61,11 +62,21 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock
+                <StackPanel
                     Grid.Column="0"
-                    Margin="10,0,0,0"
                     VerticalAlignment="Center"
-                    Text="NavyRadar" />
+                    Orientation="Horizontal">
+
+                    <Image
+                        x:Name="TitleBarIcon"
+                        Width="22"
+                        Height="22"
+                        Margin="8,2,4,0"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="Assets/icon.ico" />
+
+                    <TextBlock VerticalAlignment="Center" Text="NavyRadar" />
+                </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
                         Click="MinimizeButton_Click"

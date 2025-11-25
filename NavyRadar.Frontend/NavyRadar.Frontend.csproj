@@ -20,6 +20,7 @@
     <Resource Include="Assets\position.html">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <None Remove="Assets\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +57,10 @@
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\icon.ico" />
   </ItemGroup>
 
 </Project>
