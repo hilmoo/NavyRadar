@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Frontend", "NavyRadar.Frontend\NavyRadar.Frontend.csproj", "{53B2B409-BD49-49C7-B2D8-0B25ADB0E103}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Shared", "NavyRadar.Shared\NavyRadar.Shared.csproj", "{C572AFA0-74F4-41E3-BC84-BC045041CB02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Backend", "NavyRadar.Backend\NavyRadar.Backend.csproj", "{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavyRadar.Backend.Tests", "NavyRadar.Backend.Tests\NavyRadar.Backend.Tests.csproj", "{580E54B5-41A5-1819-3E2B-EE7646CD4016}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D44CE1F-CF5C-47C9-8C61-6ADE929026DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{580E54B5-41A5-1819-3E2B-EE7646CD4016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{580E54B5-41A5-1819-3E2B-EE7646CD4016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{580E54B5-41A5-1819-3E2B-EE7646CD4016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{580E54B5-41A5-1819-3E2B-EE7646CD4016}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
