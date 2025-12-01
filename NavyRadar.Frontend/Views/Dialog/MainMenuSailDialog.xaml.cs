@@ -20,7 +20,7 @@ public partial class MainMenuSailDialog
             Sail = null;
             _isUpdateMode = false;
 
-            var now = DateTime.Now;
+            var now = DateTime.Now.ToUniversalTime();
             DepartureTimePicker.SelectedDate = now.Date;
             DepartureHourTextBox.Text = now.Hour.ToString("D2");
             DepartureMinuteTextBox.Text = now.Minute.ToString("D2");
